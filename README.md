@@ -15,9 +15,11 @@ From original oF :
 
 User interface elements from Reza Ali addon ofxUI : https://github.com/rezaali/ofxUI
 
+............ Work in progress ...........
+
 /*********************************************************************************
-	
-	ofOscKinect - Kinect Tracking Application
+    
+    ofOscKinect - Kinect Tracking Application
     Martial GALLORINI
 
     This program is free software: you can redistribute it and/or modify
