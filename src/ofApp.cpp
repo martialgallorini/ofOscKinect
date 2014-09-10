@@ -150,14 +150,14 @@ void ofApp::update(){
         grayThreshNear.threshold(nearThreshold, true);
         grayThreshFar.threshold(farThreshold);
         cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage.getCvImage(), NULL);
+        
+        // update the cv images
+        grayImage.flagImageChanged();
+        
+        // find contours which are between the size of 50 pixels and 1/2 the w*h pixels.
+        // also, find holes is set to true so we will get interior contours as well....
+        contourFinder.findContours(grayImage, 50, (kinect.width*kinect.height)/2, 5, false);
     }
-
-    // update the cv images
-    grayImage.flagImageChanged();
-    
-    // find contours which are between the size of 50 pixels and 1/2 the w*h pixels.
-    // also, find holes is set to true so we will get interior contours as well....
-    contourFinder.findContours(grayImage, 50, (kinect.width*kinect.height)/2, 5, false);
     
     if (contourFinder.nBlobs > 0)
     {
@@ -220,7 +220,7 @@ void ofApp::update(){
     }
 
     // Send OSC values
-    sendOsc("/vidMap/kinect/distance",  nDist);
+    sendOsc("/vidMap/kinect/distance", ofMap(dist, 1100, 500, 1, 0));
     sendOsc("/vidMap/kinect/x", ofMap(pos.x, 0, canvasWidth, 0, 1));
     sendOsc("/vidMap/kinect/y", ofMap(pos.y, 0, canvasHeight, 0, 1));
     sendOsc("/vidMap/fx/on", contourFinder.nBlobs);
