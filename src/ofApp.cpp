@@ -140,8 +140,8 @@ void ofApp::update(){
 		// load grayscale depth image from the kinect source
 		grayImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
 		    
-        grayImage.mirror(false, true);
-        flippedDepthImg = grayImage;
+        //grayImage.mirror(false, true);
+        //flippedDepthImg = grayImage;
         
 		// we do two thresholds - one for the far plane and one for the near plane
 		// we then do a cvAnd to get the pixels which are a union of the two thresholds
@@ -151,25 +151,20 @@ void ofApp::update(){
         grayThreshFar.threshold(farThreshold);
         cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage.getCvImage(), NULL);
         
-        // update the cv images
-        grayImage.flagImageChanged();
-        
-        // find contours which are between the size of 50 pixels and 1/2 the w*h pixels.
-        // also, find holes is set to true so we will get interior contours as well....
-        contourFinder.findContours(grayImage, 50, (kinect.width*kinect.height)/2, 5, false);
+
     }
+    
+    // update the cv images
+    grayImage.flagImageChanged();
+    
+    // find contours which are between the size of 80 pixels and 1/2 the w*h pixels.
+    // also, find holes is set to true so we will get interior contours as well....
+    contourFinder.findContours(grayImage, 80, (kinect.width*kinect.height)/2, 5, false);
     
     if (contourFinder.nBlobs > 0)
     {
-        // TEST - solution 1 pour trouver le centre de la forme détectée
-        //ofRectangle bRect = contourFinder.blobs.at(0).boundingRect;
-        //pos.x = bRect.x + (bRect.width / 2);
-        //pos.y = bRect.y + (bRect.height / 2);
-        // END TEST
-        
-        // TEST - solution 2 pour trouver le centre de la forme détectée
+
         pos = contourFinder.blobs.at(0).centroid;
-        // END TEST
         
         dist = kinect.getDistanceAt(pos);
 
@@ -231,8 +226,8 @@ void ofApp::update(){
 void ofApp::draw()
 {
     ofSetColor(255, 255, 255);
-    //kinect.drawDepth(10, 10, 497, 369);
-    flippedDepthImg.draw(10, 10, canvasWidth, canvasHeight);
+    kinect.drawDepth(10, 10, canvasWidth, canvasHeight);
+    //flippedDepthImg.draw(10, 10, canvasWidth, canvasHeight);
     contourFinder.draw(10, 10, canvasWidth, canvasHeight);
     //flippedDepthImg.draw(10, 10, 640, 480);
     //contourFinder.draw(10, 10, 640, 480);
