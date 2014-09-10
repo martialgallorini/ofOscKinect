@@ -7,7 +7,6 @@
 #include "ofxOsc.h"
 #include "ofxXmlSettings.h"
 
-
 class ofApp : public ofBaseApp{
 
 	public:
@@ -28,11 +27,13 @@ class ofApp : public ofBaseApp{
     
     ofxKinect kinect;
     
-    //---------- blob tracking with ofxOpenCV ----------//
+    //---------- blob tracking with ofxKinect and ofxOpenCV ----------//
     
     ofxCvGrayscaleImage grayImage; // grayscale depth image
 	ofxCvGrayscaleImage grayThreshNear; // the near thresholded image
 	ofxCvGrayscaleImage grayThreshFar; // the far thresholded image
+	ofxCvGrayscaleImage flippedDepthImg; // mirrored depth image (horizontal flip)
+	ofxCvGrayscaleImage testImg; // to DEL
 	
 	ofxCvContourFinder contourFinder;
     
@@ -40,14 +41,20 @@ class ofApp : public ofBaseApp{
     
     float nearThreshold;
 	float farThreshold;
-    string isEffectActive;
-    string isDetectionActive;
-    float effectForce;
+    float nDist; // normalized kinect distance value (float between 0 and 1)
     float dist;
     ofxUIVec3f pos;
     string oscHost;
     int oscPort;
-    float test;
+    
+    int frameRate;
+    float lastTimeCheck;
+    float timeOut;
+    
+    vector<string> effects;
+        
+    int effectNumber;
+    
     
     
     //---------- GUI ----------//
@@ -57,6 +64,12 @@ class ofApp : public ofBaseApp{
     ofxUICanvas *cartel;
     ofxUICanvas *kinectInfos;
     ofxUICanvas *configPanel;
+    ofxUICanvas *effectsPanel;
+    
+    ofxUIRadio* effectsRadio;
+    
+    int canvasWidth;
+    int canvasHeight;
 
     void guiEvent(ofxUIEventArgs &e);
 
