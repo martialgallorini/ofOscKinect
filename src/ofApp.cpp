@@ -140,8 +140,8 @@ void ofApp::update(){
 		// load grayscale depth image from the kinect source
 		grayImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
 		    
-        //grayImage.mirror(false, true);
-        //flippedDepthImg = grayImage;
+        grayImage.mirror(false, true);
+        flippedDepthImg = grayImage;
         
 		// we do two thresholds - one for the far plane and one for the near plane
 		// we then do a cvAnd to get the pixels which are a union of the two thresholds
@@ -231,8 +231,8 @@ void ofApp::update(){
 void ofApp::draw()
 {
     ofSetColor(255, 255, 255);
-    kinect.drawDepth(10, 10, 497, 369);
-    //flippedDepthImg.draw(10, 10, canvasWidth, canvasHeight);
+    //kinect.drawDepth(10, 10, 497, 369);
+    flippedDepthImg.draw(10, 10, canvasWidth, canvasHeight);
     contourFinder.draw(10, 10, canvasWidth, canvasHeight);
     //flippedDepthImg.draw(10, 10, 640, 480);
     //contourFinder.draw(10, 10, 640, 480);
