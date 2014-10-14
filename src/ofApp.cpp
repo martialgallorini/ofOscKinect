@@ -2,206 +2,116 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+    
     ofDisableSmoothing();
     ofDisableAlphaBlending();
     //glEnable(GL_LIGHTING);
     
-    frameRate = 30;
-    ofSetFrameRate(frameRate);
-    ofBackground(0, 0, 250);
+    ofSetFrameRate(FRAMERATE);
+    //ofBackground(0, 0, 250);
     
-    canvasWidth = 497;
-    canvasHeight = 369;
+    cvKinect.setup();
     
     lastTimeCheck = ofGetElapsedTimeMillis();
-    timeOut = 120000; // in millisecond = 2 min
     effectNumber = 0;
     
-    kinect.init(true, false, true);
-    kinect.setDepthClipping(500, 1200);
-    kinect.open();
-    kinect.setLed(ofxKinect::LED_OFF);
-    
-    grayImage.allocate(kinect.width, kinect.height);
-    grayThreshNear.allocate(kinect.width, kinect.height);
-    grayThreshFar.allocate(kinect.width, kinect.height);
-    flippedDepthImg.allocate(kinect.width, kinect.height);
-    
-    nearThreshold = 400;
-	farThreshold = 50;
-    nDist = 0;
-    dist = 0;
-    pos = ofPoint(0,0);
     oscHost = "192.168.4.190";
     oscPort = 3333;
-        
     oscSender.setup(oscHost, oscPort);
     
-    canvasTheme = OFX_UI_THEME_DEFAULT;
-    //canvasTheme = OFX_UI_THEME_MINYELLOW;
-    //canvasTheme = OFX_UI_THEME_MINBLACK;
-    //canvasTheme = OFX_UI_THEME_HIPSTER;
-    //canvasTheme = OFX_UI_THEME_HACKER;
+    setupMode = false;
     
+    setupUI();
     
-    // cartel GUI
-    
-    cartel = new ofxUICanvas(10, 389, canvasWidth, canvasHeight);
-    cartel->setTheme(canvasTheme);
-    cartel->setWidgetSpacing(10);
-    cartel->addLabel("INSTRUCTIONS");
-    cartel->addSpacer();
-    cartel->addSpacer();
-    cartel->addLabel("- Placer votre main au desus de la zone du capteur");
-    cartel->addLabel("- Un effet est actif");
-    cartel->addLabel("- Deplacer votre main de haut en bas pour doser l'effet");
-    cartel->addLabel("- Observer l'effet sur la video");
-    cartel->addLabel("- Retirer votre main de la zone active puis replacez la");
-    cartel->addLabel("  pour changer la video");
-    cartel->addLabel("- Le type d'effet change toutes les 2 minutes");
-    
-    // Kinect Infos GUI
-    
-    kinectInfos = new ofxUICanvas(517, 10, canvasWidth, canvasHeight);
-    kinectInfos->setTheme(canvasTheme);
-    kinectInfos->setWidgetSpacing(10);
-    kinectInfos->setName("kinectInfos");
-    kinectInfos->addLabel("CAPTEUR");
-    kinectInfos->addSpacer();
-    kinectInfos->addSpacer();
-    kinectInfos->addLabel("DETECTION","ETAT : Inactif");
-    kinectInfos->add2DPad("POSITION", ofPoint(0, canvasWidth), ofPoint(0, canvasHeight), &pos, 480, 210);
-    kinectInfos->addSlider("DISTANCE", 500, 1100, &dist);
+}
 
-    // Effects panel
-    
-	effects.push_back("DOTS");
-	effects.push_back("RGB");
-	effects.push_back("NEON");
-	effects.push_back("ASCII");
-	effects.push_back("CITY LIGHTS");
-	effects.push_back("GLOW");
-	effects.push_back("INVERT");
-    
-    effectsPanel = new ofxUICanvas(517, 389, canvasWidth, canvasHeight);
-    effectsPanel->setTheme(canvasTheme);
-    effectsPanel->setWidgetSpacing(10);
-    effectsPanel->addLabel("INTERFERENCES");
-    effectsPanel->addSpacer();
-    effectsPanel->addSpacer();
-    effectsPanel->addLabel("FX STATE", "ETAT : Inactif");
-	effectsRadio = effectsPanel->addRadio("TYPE INTERFERENCE", effects, OFX_UI_ORIENTATION_VERTICAL);
-    effectsRadio->activateToggle(effects.at(effectNumber));
-    effectsPanel->addSlider("INTENSITE", 0, 1, nDist);
-    effectsPanel->addSlider("VAR 1", 0, 1, pos.x);
-    effectsPanel->addSlider("VAR 2", 0, 1, pos.y);
 
+//--------------------------------------------------------------
+
+void ofApp::setupUI() {
     
     // Config Panel GUI
     
+    configUI = new ofxUICanvas(10, 389, CANVAS_WIDTH, CANVAS_HEIGHT);
+    configUI->setName("CONFIG PANEL");
+    configUI->setWidgetSpacing(10);
     
-    configPanel = new ofxUICanvas(517, 389, canvasWidth, canvasHeight);
-    //configPanel->setTheme(OFX_UI_THEME_MAROON);
-    configPanel->setVisible(false);
-    configPanel->setWidgetSpacing(10);
-    configPanel->addLabel("CONFIGURATION");
-    configPanel->addSpacer();
-    configPanel->addSpacer();
-    configPanel->addRangeSlider("ZONE DE DETECTION", 0, 1100, &farThreshold, &nearThreshold);
-    configPanel->addSpacer();
-    configPanel->addLabel("Adresse IP OSC");
-    configPanel->addWidgetRight(new ofxUITextInput("OSC IP", oscHost, 100));
-    configPanel->addLabel("Port OSC");
-    configPanel->addWidgetRight(new ofxUITextInput("PORT", ofToString(oscPort), 100));
-    //configPanel->setWidgetSpacing(2);
-    configPanel->setWidgetFontSize(OFX_UI_FONT_SMALL);
-    configPanel->addLabel("distance de l'objet (float) : /vidMap/kinect/distance");
-    configPanel->addLabel("position x de l'objet (float) : /vidMap/kinect/x");
-    configPanel->addLabel("position y de l'objet (float) : /vidMap/kinect/y");
-    configPanel->addLabel("effet actif (float) : /vidMap/fx/on");
-    configPanel->addLabel("numero de l'effet actif (float) : /vidMap/fx/active");
-    configPanel->addSpacer(20);
-    configPanel->addWidgetDown(new ofxUILabelButton("SAVE", false, 150));
-    configPanel->addWidgetRight(new ofxUILabelButton("LOAD", false, 150));
-    configPanel->addWidgetRight(new ofxUILabelButton("LOAD DEFAULTS", false, 150));
+    configUI->addLabel("PARAMETRES");
+    configUI->addSpacer();
+    configUI->addSlider("Zone - position X", 0.f, 640.f, &cvKinect.roi.x);
+    configUI->addSlider("Zone - position Y", 0.f, 480.f, &cvKinect.roi.y);
+    configUI->addSlider("Zone - largeur", 0.f, 640.f, &cvKinect.roi.width);
+    configUI->addSlider("Zone - hauteur", 0.f, 480.f, &cvKinect.roi.height);
+    configUI->addSlider("Taille min du blob", 0.f, 20000.f, &cvKinect.minBlobSize);
+    configUI->addSlider("Sensibilite", 0.f, 255.f, &cvKinect.threshold);
+    configUI->addLabel("Adresse / Port OSC");
+    configUI->addWidgetRight(new ofxUITextInput("OSC IP", oscHost, 100));
+    configUI->addWidgetRight(new ofxUITextInput("OSC PORT", ofToString(oscPort), 100));
+    configUI->addSpacer(20);
+    configUI->addWidgetDown(new ofxUILabelButton("SAVE", false, 150));
+    configUI->addWidgetRight(new ofxUILabelButton("LOAD", false, 150));
+    configUI->addWidgetRight(new ofxUILabelButton("LOAD DEFAULTS", false, 150));
     
-    // Load settings from previously saved setup from XML file
-    configPanel->loadSettings("config.xml");
+    configUI->loadSettings("config.xml");
+    
+    // Help GUI
+    helpUI = new ofxUICanvas(517, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
+    helpUI->setName("HELP PANEL");
+    helpUI->setWidgetSpacing(10);
+    helpUI->setWidgetFontSize(OFX_UI_FONT_SMALL);
+    helpUI->addLabel("PARAMETRES OSC");
+    helpUI->addSpacer();
+    helpUI->addLabel("distance de l'objet (float) : /vidMap/kinect/distance");
+    helpUI->addLabel("position x de l'objet (float) : /vidMap/kinect/x");
+    helpUI->addLabel("position y de l'objet (float) : /vidMap/kinect/y");
+    helpUI->addLabel("clip suivant : /vidMap/clip/next");
+    helpUI->addLabel("active / desactive effet numero N (booleen) : /vidMap/fx/N");
+    helpUI->setVisible(false);
+    
+    // Kinect Infos GUI
+    
+    kinectUI = new ofxUICanvas(517, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
+    kinectUI->setWidgetSpacing(10);
+    kinectUI->setName("KINECT INFOS");
+    kinectUI->addLabel("CAPTEUR");
+    kinectUI->addSpacer();
+    kinectUI->add2DPad("POSITION", ofPoint(250, 500), ofPoint(285, 400), &cvKinect.pos, 480, 210);
+    kinectUI->addSlider("DISTANCE", 500.f, 1100.f, &cvKinect.pos.z);
+    
+    // Effects panel
+    
+    effects.push_back("CITY LIGHTS");
+    effects.push_back("HEXAGONAL PIXELLATE");
+    effects.push_back("TRACER");
+    effects.push_back("GLITCH FBO COMPOSITE");
+    effects.push_back("RUTT ETRA");
+    effects.push_back("CUBE MAP");
+    effects.push_back("LINE SCREEN");
+    effects.push_back("DENT");
+    
+    effectsUI = new ofxUICanvas(517, 389, CANVAS_WIDTH, CANVAS_HEIGHT);
+    effectsUI->setName("EFFECTS PANEL");
+    effectsUI->setWidgetSpacing(10);
+    effectsUI->addLabel("EFFETS");
+    effectsUI->addSpacer();
+    effectsRadio = effectsUI->addRadio("TYPE INTERFERENCE", effects, OFX_UI_ORIENTATION_VERTICAL);
+    effectsRadio->activateToggle(effects.at(effectNumber));
+    effectsUI->addSlider("TRACEUR 1", 0, 1, &cvKinect.pos.z);
+    effectsUI->addSlider("TRACEUR 2", 0, 1, &cvKinect.pos.x);
+    effectsUI->addSlider("TRACEUR 3", 0, 1, &cvKinect.pos.y);
+    
 }
+
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    kinect.update();
+    cvKinect.update();
     
-    if(kinect.isFrameNew())
+    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT)
     {
-		// load grayscale depth image from the kinect source
-		grayImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-		    
-        //grayImage.mirror(false, true);
-        //flippedDepthImg = grayImage;
-        
-		// we do two thresholds - one for the far plane and one for the near plane
-		// we then do a cvAnd to get the pixels which are a union of the two thresholds
-        grayThreshNear = grayImage;
-        grayThreshFar = grayImage;
-        grayThreshNear.threshold(nearThreshold, true);
-        grayThreshFar.threshold(farThreshold);
-        cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage.getCvImage(), NULL);
-        
-
-    }
-    
-    // update the cv images
-    grayImage.flagImageChanged();
-    
-    // find contours which are between the size of 80 pixels and 1/2 the w*h pixels.
-    // also, find holes is set to true so we will get interior contours as well....
-    contourFinder.findContours(grayImage, 80, (kinect.width*kinect.height)/2, 5, false);
-    
-    if (contourFinder.nBlobs > 0)
-    {
-
-        pos = contourFinder.blobs.at(0).centroid;
-        
-        dist = kinect.getDistanceAt(pos);
-
-        // update detected and effect state
-        ofxUILabel *sel = (ofxUILabel *)kinectInfos->getWidget("DETECTION");
-        sel->setLabel("ETAT : Presence active !");
-        sel = (ofxUILabel *)effectsPanel->getWidget("FX STATE");
-        sel->setLabel("ETAT : Actif !");
-    }
-    else
-    {
-        dist = 0;
-        pos = ofPoint(0,0);
-        
-        // update detected and effect state
-        ofxUILabel *sel = (ofxUILabel *)kinectInfos->getWidget("DETECTION");
-        sel->setLabel("ETAT : Inactif");
-        sel = (ofxUILabel *)effectsPanel->getWidget("FX STATE");
-        sel->setLabel("ETAT : Inactif");
-    }
-    
-    // update effect intensity slider value
-    ofxUISlider* slider = (ofxUISlider *)effectsPanel->getWidget("INTENSITE");
-    slider->setValue(ofMap(dist, 1100, 500, 1, 0));
-    
-    // update effect variable 1 slider value with kinect position x
-    slider = (ofxUISlider *)effectsPanel->getWidget("VAR 1");
-    slider->setValue(ofMap(pos.x, 0, canvasWidth, 0, 1));
-    
-    // update effect variable 2 slider value with kinect position y
-    slider = (ofxUISlider *)effectsPanel->getWidget("VAR 2");
-    slider->setValue(ofMap(pos.y, 0, canvasHeight, 0, 1));
-    
-    
-    if ( ofGetElapsedTimeMillis() - lastTimeCheck > timeOut)
-    {
-        if (effectNumber < 6)
+        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
+        if (effectNumber < 7)
         {
             effectNumber++;
         }
@@ -209,42 +119,48 @@ void ofApp::update(){
         {
             effectNumber = 0;
         }
-        ofxUIRadio *sel = (ofxUIRadio *)effectsPanel->getWidget("TYPE INTERFERENCE");
+        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("TYPE INTERFERENCE");
         sel->activateToggle(effects.at(effectNumber));
         lastTimeCheck = ofGetElapsedTimeMillis();
     }
-
+    
     // Send OSC values
-    sendOsc("/vidMap/kinect/distance", ofMap(dist, 1100, 500, 1, 0));
-    sendOsc("/vidMap/kinect/x", ofMap(pos.x, 0, canvasWidth, 0, 1));
-    sendOsc("/vidMap/kinect/y", ofMap(pos.y, 0, canvasHeight, 0, 1));
-    sendOsc("/vidMap/fx/on", contourFinder.nBlobs);
-    sendOsc("/vidMap/fx/active", effectNumber);
-    }
+    sendOsc("/vidMap/kinect/distance", ofMap(cvKinect.pos.z, 1100, 500, 1, 0));
+    sendOsc("/vidMap/kinect/x", ofMap(cvKinect.pos.x, 250, 500, 0, 1));
+    sendOsc("/vidMap/kinect/y", ofMap(cvKinect.pos.y, 285, 380, 0, 1));
+}
 
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-    ofSetColor(255, 255, 255);
-    kinect.drawDepth(10, 10, canvasWidth, canvasHeight);
-    //flippedDepthImg.draw(10, 10, canvasWidth, canvasHeight);
-    contourFinder.draw(10, 10, canvasWidth, canvasHeight);
-    //flippedDepthImg.draw(10, 10, 640, 480);
-    //contourFinder.draw(10, 10, 640, 480);
-    ofSetColor(255, 0, 0); //stroke color
-    ofPoint newPos(ofMap(pos.x,0,kinect.width,0,canvasWidth),ofMap(pos.y,0,kinect.height,0,canvasHeight));
-    ofCircle(newPos, 3);
+    cvKinect.draw(10, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
+    cvKinect.drawContour(10, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
 void ofApp::exit()
 {
-    kinect.close();
+    //cvKinect.close();
+
+    configUI->saveSettings("config.xml");
+
+    //view.exit();
 }
 
 void ofApp::guiEvent(ofxUIEventArgs &e)
 {
-	string name = e.getName();
-	int kind = e.getKind();
+    string name = e.getName();
+    if (name == "SAVE") {
+        ofxUILabelButton *button = (ofxUILabelButton *) e.widget;
+        configUI->saveSettings("config.xml");
+    }
+    else if (name == "LOAD") {
+        ofxUILabelButton *button = (ofxUILabelButton *) e.widget;
+        configUI->loadSettings("config.xml");
+    }
+    else if (name == "LOAD DEFAULTS") {
+        ofxUILabelButton *button = (ofxUILabelButton *) e.widget;
+        loadDefaultConfig();
+    }
 }
 
 //--------------------------------------------------------------
@@ -255,14 +171,17 @@ void ofApp::keyPressed(int key)
             ofToggleFullscreen();
             break;
         case 's':
-            configPanel->saveSettings("config.xml");
+            configUI->saveSettings("config.xml");
             break;
         case 'd':
             loadDefaultConfig();
             break;
-        case 'c':
-            configPanel->toggleVisible();
-            effectsPanel->toggleVisible();
+        case 'h':
+            //configUI->toggleVisible();
+            //effectsUI->toggleVisible();
+            kinectUI->toggleVisible();
+            helpUI->toggleVisible();
+            setupMode = !setupMode;
             break;
         default:
             break;
@@ -274,7 +193,6 @@ void ofApp::sendOsc(string key, float val)
 {
     ofxOscMessage m;
     m.setAddress(key);
-    cout << val << endl;
     m.addFloatArg(val);
     oscSender.sendMessage(m);
 }
@@ -282,56 +200,62 @@ void ofApp::sendOsc(string key, float val)
 //--------------------------------------------------------------
 void ofApp::loadDefaultConfig()
 {
-    nearThreshold = 400;
-	farThreshold = 50;
-    nDist = 0;
-    dist = 0;
-    pos = ofPoint(0,0);
+    cvKinect.pos = ofVec3f(0,0,0);
+    
+    cvKinect.roi.x = 0;
+    cvKinect.roi.y = 0;
+    cvKinect.roi.width = 640;
+    cvKinect.roi.height = 480;
+    
+    cvKinect.threshold = 0;
+    cvKinect.minBlobSize = 5000.f;
+    
     oscHost = "192.168.5.81";
     oscPort = 3333;
-    ofxUITextInput *sel = (ofxUITextInput *)configPanel->getWidget("OSC IP");
+    
+    ofxUITextInput *sel = (ofxUITextInput *)configUI->getWidget("OSC IP");
     sel->setTextString(oscHost);
-    sel = (ofxUITextInput *)configPanel->getWidget("OSC PORT");
+    sel = (ofxUITextInput *)configUI->getWidget("OSC PORT");
     sel->setTextString(ofToString(oscPort));
     oscSender.setup(oscHost, oscPort);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+    
 }

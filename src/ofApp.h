@@ -1,87 +1,77 @@
 #pragma once
 
+#define TIMEOUT 30000 // in millisecond = 1m 14s
+#define FRAMERATE 30
+#define CANVAS_WIDTH 497
+#define CANVAS_HEIGHT 369
+#define CANVAS_THEME OFX_UI_THEME_DEFAULT
+
+//canvasTheme = OFX_UI_THEME_MINYELLOW;
+//canvasTheme = OFX_UI_THEME_MINBLACK;
+//canvasTheme = OFX_UI_THEME_HIPSTER;
+//canvasTheme = OFX_UI_THEME_HACKER;
+
+
 #include "ofMain.h"
-#include "ofxKinect.h"
 #include "ofxUI.h"
-#include "ofxOpenCv.h"
 #include "ofxOsc.h"
 #include "ofxXmlSettings.h"
+#include "kinectTracker.h"
+
 
 class ofApp : public ofBaseApp{
-
-	public:
-		void setup();
-		void update();
-		void draw();
-        void exit();
-
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
     
-    ofxKinect kinect;
+public:
+    void setup();
+    void update();
+    void draw();
+    void exit();
     
-    //---------- blob tracking with ofxKinect and ofxOpenCV ----------//
+    void keyPressed(int key);
+    void keyReleased(int key);
+    void mouseMoved(int x, int y );
+    void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
+    void windowResized(int w, int h);
+    void dragEvent(ofDragInfo dragInfo);
+    void gotMessage(ofMessage msg);
     
-    ofxCvGrayscaleImage grayImage; // grayscale depth image
-	ofxCvGrayscaleImage grayThreshNear; // the near thresholded image
-	ofxCvGrayscaleImage grayThreshFar; // the far thresholded image
-	ofxCvGrayscaleImage flippedDepthImg; // mirrored depth image (horizontal flip)
-	ofxCvGrayscaleImage testImg; // to DEL
-	
-	ofxCvContourFinder contourFinder;
+    void setupUI();
     
-    //---------- DATA ----------//
+    kinectTracker cvKinect;
     
-    float nearThreshold;
-	float farThreshold;
-    float nDist; // normalized kinect distance value (float between 0 and 1)
-    float dist;
-    ofxUIVec3f pos;
     string oscHost;
     int oscPort;
     
-    int frameRate;
+    
     float lastTimeCheck;
-    float timeOut;
+    bool setupMode;
     
     vector<string> effects;
-        
-    int effectNumber;
     
+    int effectNumber;
     
     
     //---------- GUI ----------//
     
     int canvasTheme;
     
-    ofxUICanvas *cartel;
-    ofxUICanvas *kinectInfos;
-    ofxUICanvas *configPanel;
-    ofxUICanvas *effectsPanel;
+    ofxUICanvas *kinectUI;
+    ofxUICanvas *configUI;
+    ofxUICanvas *effectsUI;
+    ofxUICanvas *helpUI;
     
     ofxUIRadio* effectsRadio;
     
-    int canvasWidth;
-    int canvasHeight;
-
     void guiEvent(ofxUIEventArgs &e);
-
     
     //---------- OSC ----------//
     
     ofxOscSender oscSender;
     void sendOsc(string key, float val);
     
-    //---------- CONFIGURATION ----------//
-
-    //ofxXmlSettings settings;
+    //---------- XML SETTINGS ----------//
     void loadDefaultConfig();
-		
+    
 };
