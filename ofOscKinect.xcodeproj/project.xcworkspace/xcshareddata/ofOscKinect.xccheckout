@@ -10,29 +10,29 @@
 	<string>ofOscKinect</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>0129599E-B9A9-447F-8545-4A425537E2DA</key>
+		<key>CA90F9FE588DB8F35E7F645AC63457EFCD3F5F76</key>
 		<string>https://github.com/martialgallorini/ofOscKinect</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>ofOscKinect.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>0129599E-B9A9-447F-8545-4A425537E2DA</key>
+		<key>CA90F9FE588DB8F35E7F645AC63457EFCD3F5F76</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/martialgallorini/ofOscKinect</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>0129599E-B9A9-447F-8545-4A425537E2DA</string>
+	<string>CA90F9FE588DB8F35E7F645AC63457EFCD3F5F76</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>0129599E-B9A9-447F-8545-4A425537E2DA</string>
+			<string>CA90F9FE588DB8F35E7F645AC63457EFCD3F5F76</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofOscKinect</string>
 		</dict>
