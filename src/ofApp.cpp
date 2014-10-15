@@ -36,15 +36,15 @@ void ofApp::setupUI() {
     configUI->setName("CONFIG PANEL");
     configUI->setWidgetSpacing(10);
     
-    configUI->addLabel("PARAMETRES");
+    configUI->addLabel("PARAMETERS");
     configUI->addSpacer();
     configUI->addSlider("ROI - position X", 0.f, 640.f, &cvKinect.roi.x);
     configUI->addSlider("ROI - position Y", 0.f, 480.f, &cvKinect.roi.y);
-    configUI->addSlider("ROI - largeur", 0.f, 640.f, &cvKinect.roi.width);
-    configUI->addSlider("ROI - hauteur", 0.f, 480.f, &cvKinect.roi.height);
-    configUI->addSlider("Taille min du blob", 0.f, 20000.f, &cvKinect.minBlobSize);
-    configUI->addSlider("Seil", 0.f, 255.f, &cvKinect.threshold);
-    configUI->addLabel("Adresse / Port OSC");
+    configUI->addSlider("ROI - width", 0.f, 640.f, &cvKinect.roi.width);
+    configUI->addSlider("ROI - height", 0.f, 480.f, &cvKinect.roi.height);
+    configUI->addSlider("Min blob size", 0.f, 20000.f, &cvKinect.minBlobSize);
+    configUI->addSlider("Threshold", 0.f, 255.f, &cvKinect.threshold);
+    configUI->addLabel("Adsress / Port OSC");
     configUI->addWidgetRight(new ofxUITextInput("OSC IP", oscHost, 100));
     configUI->addWidgetRight(new ofxUITextInput("OSC PORT", ofToString(oscPort), 100));
     configUI->addSpacer(20);
@@ -59,21 +59,21 @@ void ofApp::setupUI() {
     helpUI->setName("HELP PANEL");
     helpUI->setWidgetSpacing(10);
     helpUI->setWidgetFontSize(OFX_UI_FONT_SMALL);
-    helpUI->addLabel("PARAMETRES OSC");
+    helpUI->addLabel("OSC PARAMETERS");
     helpUI->addSpacer();
-    helpUI->addLabel("distance de l'objet (float) : /vidMap/kinect/distance");
-    helpUI->addLabel("position x de l'objet (float) : /vidMap/kinect/x");
-    helpUI->addLabel("position y de l'objet (float) : /vidMap/kinect/y");
-    helpUI->addLabel("clip suivant : /vidMap/clip/next");
-    helpUI->addLabel("active / desactive effet numero N (booleen) : /vidMap/fx/N");
+    helpUI->addLabel("distance from objet (float) : /vidMap/kinect/distance");
+    helpUI->addLabel("position x of objet (float) : /vidMap/kinect/x");
+    helpUI->addLabel("position y of objet (float) : /vidMap/kinect/y");
+    helpUI->addLabel("next clip : /vidMap/clip/next");
+    helpUI->addLabel("activate / deactivate effect number N (boolean) : /vidMap/fx/N");
     helpUI->setVisible(false);
     
     // Kinect Infos GUI
     
     kinectUI = new ofxUICanvas(517, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
     kinectUI->setWidgetSpacing(10);
-    kinectUI->setName("KINECT INFOS");
-    kinectUI->addLabel("CAPTEUR");
+    kinectUI->setName("KINECT INFO");
+    kinectUI->addLabel("SENSOR");
     kinectUI->addSpacer();
     kinectUI->add2DPad("POSITION", ofPoint(250, 500), ofPoint(285, 400), &cvKinect.pos, 480, 210);
     kinectUI->addSlider("DISTANCE", 500.f, 1100.f, &cvKinect.pos.z);
@@ -92,13 +92,13 @@ void ofApp::setupUI() {
     effectsUI = new ofxUICanvas(517, 389, CANVAS_WIDTH, CANVAS_HEIGHT);
     effectsUI->setName("EFFECTS PANEL");
     effectsUI->setWidgetSpacing(10);
-    effectsUI->addLabel("EFFETS");
+    effectsUI->addLabel("EFFECTS");
     effectsUI->addSpacer();
-    effectsRadio = effectsUI->addRadio("TYPE INTERFERENCE", effects, OFX_UI_ORIENTATION_VERTICAL);
+    effectsRadio = effectsUI->addRadio("INTERFERENCE TYPE", effects, OFX_UI_ORIENTATION_VERTICAL);
     effectsRadio->activateToggle(effects.at(effectNumber));
-    effectsUI->addSlider("TRACEUR 1", 0, 1, &cvKinect.pos.z);
-    effectsUI->addSlider("TRACEUR 2", 0, 1, &cvKinect.pos.x);
-    effectsUI->addSlider("TRACEUR 3", 0, 1, &cvKinect.pos.y);
+    effectsUI->addSlider("TRIGGER 1", 0, 1, &cvKinect.pos.z);
+    effectsUI->addSlider("TRIGGER 2", 0, 1, &cvKinect.pos.x);
+    effectsUI->addSlider("TRIGGER 3", 0, 1, &cvKinect.pos.y);
     
 }
 
@@ -119,7 +119,7 @@ void ofApp::update(){
         {
             effectNumber = 0;
         }
-        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("TYPE INTERFERENCE");
+        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
         sel->activateToggle(effects.at(effectNumber));
         lastTimeCheck = ofGetElapsedTimeMillis();
     }

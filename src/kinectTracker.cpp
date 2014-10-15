@@ -68,8 +68,7 @@ void kinectTracker::update() {
         contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 1, false);
     }
     
-    if (contourFinder.nBlobs > 0)
-    //if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
+    if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
     {
         pos = contourFinder.blobs.at(0).centroid;
         pos.z = kinect.getDistanceAt(pos.x, pos.y);
