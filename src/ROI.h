@@ -9,10 +9,9 @@
 #ifndef ofOscKinect_ROI_h
 #define ofOscKinect_ROI_h
 
-//#define CAM_WIDTH 640
-//#define CAM_HEIGHT 480
-#define CAM_WIDTH 497
-#define CAM_HEIGHT 369
+#define CAM_WIDTH 640
+#define CAM_HEIGHT 480
+
 
 class ROI : public ofBaseDraws, public ofRectangle {
     
@@ -23,6 +22,7 @@ public:
     void draw(float _x,float _y,float w, float h)  {
         
         ofPushMatrix();
+        
         ofTranslate(_x, _y);
         ofScale(w/CAM_WIDTH, h/CAM_HEIGHT);
         

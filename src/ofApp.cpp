@@ -38,10 +38,10 @@ void ofApp::setupUI() {
     
     configUI->addLabel("PARAMETRES");
     configUI->addSpacer();
-    configUI->addSlider("Zone - position X", 0.f, 640.f, &cvKinect.roi.x);
-    configUI->addSlider("Zone - position Y", 0.f, 480.f, &cvKinect.roi.y);
-    configUI->addSlider("Zone - largeur", 0.f, 640.f, &cvKinect.roi.width);
-    configUI->addSlider("Zone - hauteur", 0.f, 480.f, &cvKinect.roi.height);
+    configUI->addSlider("ROI - position X", 0.f, 640.f, &cvKinect.roi.x);
+    configUI->addSlider("ROI - position Y", 0.f, 480.f, &cvKinect.roi.y);
+    configUI->addSlider("ROI - largeur", 0.f, 640.f, &cvKinect.roi.width);
+    configUI->addSlider("ROI - hauteur", 0.f, 480.f, &cvKinect.roi.height);
     configUI->addSlider("Taille min du blob", 0.f, 20000.f, &cvKinect.minBlobSize);
     configUI->addSlider("Sensibilite", 0.f, 255.f, &cvKinect.threshold);
     configUI->addLabel("Adresse / Port OSC");
@@ -134,16 +134,12 @@ void ofApp::update(){
 void ofApp::draw()
 {
     cvKinect.draw(10, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
-    cvKinect.drawContour(10, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
 void ofApp::exit()
 {
     //cvKinect.close();
-
     configUI->saveSettings("config.xml");
-
-    //view.exit();
 }
 
 void ofApp::guiEvent(ofxUIEventArgs &e)

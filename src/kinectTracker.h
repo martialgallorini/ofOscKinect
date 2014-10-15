@@ -24,7 +24,6 @@ public:
     void update();
     void draw();
     void draw(float _x, float _y, float _w, float _h);
-    void drawContour(float _x, float _y, float _w, float _h);
     void drawDepth(float _x, float _y, float _w, float _h);
     //void close();
 
