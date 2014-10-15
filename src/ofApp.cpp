@@ -43,7 +43,7 @@ void ofApp::setupUI() {
     configUI->addSlider("ROI - largeur", 0.f, 640.f, &cvKinect.roi.width);
     configUI->addSlider("ROI - hauteur", 0.f, 480.f, &cvKinect.roi.height);
     configUI->addSlider("Taille min du blob", 0.f, 20000.f, &cvKinect.minBlobSize);
-    configUI->addSlider("Sensibilite", 0.f, 255.f, &cvKinect.threshold);
+    configUI->addSlider("Seil", 0.f, 255.f, &cvKinect.threshold);
     configUI->addLabel("Adresse / Port OSC");
     configUI->addWidgetRight(new ofxUITextInput("OSC IP", oscHost, 100));
     configUI->addWidgetRight(new ofxUITextInput("OSC PORT", ofToString(oscPort), 100));

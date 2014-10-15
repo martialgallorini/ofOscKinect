@@ -38,7 +38,6 @@ void kinectTracker::setup() {
     roi.y = 0;
     roi.width = 640;
     roi.height = 480;
-    
 }
 
 void kinectTracker::update() {
@@ -55,8 +54,8 @@ void kinectTracker::update() {
         cvSetImageROI(depthImage.getCvImage(),cvROI);
         
         // retrieve average depth
-        thresholdImage = depthImage;
-        thresholdImage.threshold(threshold);
+        //thresholdImage = depthImage;
+        depthImage.threshold(threshold);
         
         //fillBlobPoly();
         
@@ -66,10 +65,11 @@ void kinectTracker::update() {
         depthImage.flagImageChanged();
 
         //find blob in ROI
-        contourFinder.findContours(thresholdImage, minBlobSize, roi.width*roi.height, 1, false);
+        contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 1, false);
     }
     
-    if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
+    if (contourFinder.nBlobs > 0)
+    //if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
     {
         pos = contourFinder.blobs.at(0).centroid;
         pos.z = kinect.getDistanceAt(pos.x, pos.y);
@@ -86,6 +86,7 @@ void kinectTracker::draw(float _x, float _y, float _w, float _h) {
     ofScale(_w/CAM_WIDTH, _h/CAM_HEIGHT);
     kinect.draw(0, 0);
     roi.draw(0, 0);
+
     if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
         contourFinder.draw(roi.x, roi.y);
     }
@@ -98,7 +99,7 @@ void kinectTracker::drawDepth(float _x, float _y, float _w, float _h) {
     ofScale(_w/CAM_WIDTH, _h/CAM_HEIGHT);
     kinect.drawDepth(0, 0);
     roi.draw(0, 0);
-    if(contourFinder.nBlobs > 0) {
+    if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
         contourFinder.draw(roi.x, roi.y);
     }
     ofPopMatrix();
