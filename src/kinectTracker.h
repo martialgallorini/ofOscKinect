@@ -9,6 +9,9 @@
 #ifndef __ofOscKinect__kinectTracker__
 #define __ofOscKinect__kinectTracker__
 
+#define NEAR_CLIP 500
+#define FAR_CLIP 1200
+
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 #include "ROI.h"
@@ -29,7 +32,7 @@ public:
 
     ROI roi;
     
-    //---------- Params ----------//
+    //---------- Parameters ----------//
     
     float threshold;
     float minBlobSize;

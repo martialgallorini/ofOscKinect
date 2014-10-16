@@ -6,8 +6,6 @@
 //
 //
 
-#define NEAR_CLIP 500
-#define FAR_CLIP 1200
 
 #include "kinectTracker.h"
 
@@ -36,8 +34,8 @@ void kinectTracker::setup() {
     
     roi.x = 0;
     roi.y = 0;
-    roi.width = 640;
-    roi.height = 480;
+    roi.width = CAM_WIDTH;
+    roi.height = CAM_HEIGHT;
 }
 
 void kinectTracker::update() {
@@ -53,12 +51,10 @@ void kinectTracker::update() {
         CvRect cvROI = cvRect(roi.x,roi.y,roi.width,roi.height);
         cvSetImageROI(depthImage.getCvImage(),cvROI);
         
-        // retrieve average depth
+        // Threshold depth image
         //thresholdImage = depthImage;
         depthImage.threshold(threshold);
-        
-        //fillBlobPoly();
-        
+                
         // -------- END ROI -----------
         
         // update the cv images
@@ -68,11 +64,21 @@ void kinectTracker::update() {
         contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 1, false);
     }
     
+    
+    
+//////////////////////////////
+//////////    //cvDrawContours(<#CvArr *img#>, <#CvSeq *contour#>, <#CvScalar external_color#>, <#CvScalar hole_color#>, <#int max_level#>)
+///////////////////////////////
+    /////////cvResetImageROI( src );
+
+    
+    
     if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
     {
         pos = contourFinder.blobs.at(0).centroid;
         pos.z = kinect.getDistanceAt(pos.x, pos.y);
     }
+    
 }
 
 void kinectTracker::draw() {

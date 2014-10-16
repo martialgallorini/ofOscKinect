@@ -44,7 +44,7 @@ void ofApp::setupUI() {
     configUI->addSlider("ROI - height", 0.f, 480.f, &cvKinect.roi.height);
     configUI->addSlider("Min blob size", 0.f, 20000.f, &cvKinect.minBlobSize);
     configUI->addSlider("Threshold", 0.f, 255.f, &cvKinect.threshold);
-    configUI->addLabel("Adsress / Port OSC");
+    configUI->addLabel("Address / Port OSC");
     configUI->addWidgetRight(new ofxUITextInput("OSC IP", oscHost, 100));
     configUI->addWidgetRight(new ofxUITextInput("OSC PORT", ofToString(oscPort), 100));
     configUI->addSpacer(20);
@@ -75,8 +75,11 @@ void ofApp::setupUI() {
     kinectUI->setName("KINECT INFO");
     kinectUI->addLabel("SENSOR");
     kinectUI->addSpacer();
-    kinectUI->add2DPad("POSITION", ofPoint(250, 500), ofPoint(285, 400), &cvKinect.pos, 480, 210);
-    kinectUI->addSlider("DISTANCE", 500.f, 1100.f, &cvKinect.pos.z);
+//    kinectUI->add2DPad("POSITION", ofPoint(250, 500), ofPoint(285, 400), &cvKinect.pos, 480, 210);
+//    kinectUI->addSlider("DISTANCE", 500.f, 1100.f, &cvKinect.pos.z);
+    kinectUI->add2DPad("POSITION", ofPoint(0, cvKinect.roi.width), ofPoint(0, cvKinect.roi.height), &cvKinect.pos, 480, 210);
+    kinectUI->addSlider("DISTANCE", NEAR_CLIP, FAR_CLIP, &cvKinect.pos.z);
+
     
     // Effects panel
     
@@ -173,8 +176,6 @@ void ofApp::keyPressed(int key)
             loadDefaultConfig();
             break;
         case 'h':
-            //configUI->toggleVisible();
-            //effectsUI->toggleVisible();
             kinectUI->toggleVisible();
             helpUI->toggleVisible();
             setupMode = !setupMode;
