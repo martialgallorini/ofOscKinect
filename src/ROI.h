@@ -12,13 +12,13 @@
 #define CAM_WIDTH 640
 #define CAM_HEIGHT 480
 
-
 class ROI : public ofBaseDraws, public ofRectangle {
     
 public:
     void draw(float _x,float _y) {
         draw(_x, _y, getWidth(), getHeight());
     }
+    
     void draw(float _x,float _y,float w, float h)  {
         
         ofPushMatrix();
@@ -35,9 +35,11 @@ public:
         
         ofPopMatrix();
     }
+    
     float getWidth()  {
         return CAM_WIDTH;
     }
+    
     float getHeight()  {
         return CAM_HEIGHT;
     }

@@ -43,9 +43,8 @@ public:
     string oscHost;
     int oscPort;
     
-    
     float lastTimeCheck;
-    bool setupMode;
+    bool bSetupMode;
     
     vector<string> effects;
     

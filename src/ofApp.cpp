@@ -19,7 +19,7 @@ void ofApp::setup(){
     oscPort = 3333;
     oscSender.setup(oscHost, oscPort);
     
-    setupMode = false;
+    bSetupMode = false;
     
     setupUI();
     
@@ -38,10 +38,10 @@ void ofApp::setupUI() {
     
     configUI->addLabel("PARAMETERS");
     configUI->addSpacer();
-    configUI->addSlider("ROI - position X", 0.f, 640.f, &cvKinect.roi.x);
-    configUI->addSlider("ROI - position Y", 0.f, 480.f, &cvKinect.roi.y);
-    configUI->addSlider("ROI - width", 0.f, 640.f, &cvKinect.roi.width);
-    configUI->addSlider("ROI - height", 0.f, 480.f, &cvKinect.roi.height);
+    configUI->addSlider("ROI - position X", 0.f, CAM_WIDTH, &cvKinect.roi.x);
+    configUI->addSlider("ROI - position Y", 0.f, CAM_HEIGHT, &cvKinect.roi.y);
+    configUI->addSlider("ROI - width", 0.f, CAM_WIDTH, &cvKinect.roi.width);
+    configUI->addSlider("ROI - height", 0.f, CAM_HEIGHT, &cvKinect.roi.height);
     configUI->addSlider("Min blob size", 0.f, 20000.f, &cvKinect.minBlobSize);
     configUI->addSlider("Threshold", 0.f, 255.f, &cvKinect.threshold);
     configUI->addLabel("Address / Port OSC");
@@ -75,11 +75,14 @@ void ofApp::setupUI() {
     kinectUI->setName("KINECT INFO");
     kinectUI->addLabel("SENSOR");
     kinectUI->addSpacer();
-//    kinectUI->add2DPad("POSITION", ofPoint(250, 500), ofPoint(285, 400), &cvKinect.pos, 480, 210);
-//    kinectUI->addSlider("DISTANCE", 500.f, 1100.f, &cvKinect.pos.z);
     kinectUI->add2DPad("POSITION", ofPoint(0, cvKinect.roi.width), ofPoint(0, cvKinect.roi.height), &cvKinect.pos, 480, 210);
     kinectUI->addSlider("DISTANCE", NEAR_CLIP, FAR_CLIP, &cvKinect.pos.z);
+    kinectUI->addLabel("OPTIMIZE : ");
+    kinectUI->addWidgetRight(new ofxUIToggle("Dilate", &cvKinect.bDilate, 15, 15));
+    kinectUI->addWidgetRight(new ofxUIToggle("Erode", &cvKinect.bErode, 15, 15));
+    //kinectUI->addWidgetDown(new ofxUISlider("Pass number", 0, 20, &cvKinect.nbPass));
 
+    
     
     // Effects panel
     
@@ -111,26 +114,26 @@ void ofApp::update(){
     
     cvKinect.update();
     
-    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT)
-    {
-        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
-        if (effectNumber < 7)
-        {
-            effectNumber++;
-        }
-        else
-        {
-            effectNumber = 0;
-        }
-        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
-        sel->activateToggle(effects.at(effectNumber));
-        lastTimeCheck = ofGetElapsedTimeMillis();
-    }
-    
-    // Send OSC values
-    sendOsc("/vidMap/kinect/distance", ofMap(cvKinect.pos.z, 1100, 500, 1, 0));
-    sendOsc("/vidMap/kinect/x", ofMap(cvKinect.pos.x, 250, 500, 0, 1));
-    sendOsc("/vidMap/kinect/y", ofMap(cvKinect.pos.y, 285, 380, 0, 1));
+//    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT)
+//    {
+//        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
+//        if (effectNumber < 7)
+//        {
+//            effectNumber++;
+//        }
+//        else
+//        {
+//            effectNumber = 0;
+//        }
+//        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
+//        sel->activateToggle(effects.at(effectNumber));
+//        lastTimeCheck = ofGetElapsedTimeMillis();
+//    }
+//    
+//    // Send OSC values
+//    sendOsc("/vidMap/kinect/distance", ofMap(cvKinect.pos.z, 1100, 500, 1, 0));
+//    sendOsc("/vidMap/kinect/x", ofMap(cvKinect.pos.x, 250, 500, 0, 1));
+//    sendOsc("/vidMap/kinect/y", ofMap(cvKinect.pos.y, 285, 380, 0, 1));
 }
 
 //--------------------------------------------------------------
@@ -178,7 +181,7 @@ void ofApp::keyPressed(int key)
         case 'h':
             kinectUI->toggleVisible();
             helpUI->toggleVisible();
-            setupMode = !setupMode;
+            bSetupMode = !bSetupMode;
             break;
         default:
             break;

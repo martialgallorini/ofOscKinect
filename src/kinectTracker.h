@@ -36,6 +36,9 @@ public:
     
     float threshold;
     float minBlobSize;
+    bool bDilate;
+    bool bErode;
+    int nbPass;
 
     ofVec3f pos; // x, y and z position of blob
     

@@ -1,26 +1,35 @@
 ofOscKinect
 ===========
 
+............ Work in progress !!! ...........
+
+
 Kinect user interface that sends OSC commands relative to openCV detected blobs
 
-Developped with openFrameworks 0.8.3 under MacOSX Mavericks and XCode 5
+Devellopped with openFrameworks 0.8.3 under MacOSX Mavericks and XCode 5
 
 Using addons :
 
-From original oF :
+Core oF addons :
 - ofxKinect
 - ofxOpenCv
 - ofxXmlSettings
 - ofxOsc
 
-User interface elements from Reza Ali addon ofxUI : https://github.com/rezaali/ofxUI
+External addons :
+- ofxUI from Reza Ali (https://github.com/rezaali/ofxUI)
 
-............ Work in progress ...........
+
+TODO
+-------
+
+- add record / play depth image function to use it as « away from kinect »  debugging sample
+
 
 License
 -------
 
-auditControl - Graphical user interface for controling audiovisual devices
+auditControl - Graphical user interface for controlling audiovisual devices
 
 Martial GALLORINI (http://www.martialgallorini.com/)
 

@@ -10,7 +10,7 @@
 #include "kinectTracker.h"
 
 kinectTracker::kinectTracker() {
-
+    
 }
 
 kinectTracker::~kinectTracker() {
@@ -26,9 +26,11 @@ void kinectTracker::setup() {
     
     depthImage.allocate(kinect.width, kinect.height);
     thresholdImage.allocate(kinect.width, kinect.height);
-
+    
     threshold = 10;
     minBlobSize = 5000.f;
+    bDilate = false;
+    bErode = false;
     
     pos = ofVec3f(0,0,0);
     
@@ -39,38 +41,50 @@ void kinectTracker::setup() {
 }
 
 void kinectTracker::update() {
-
+    
     kinect.update();
     
     if(kinect.isFrameNew())
     {
+        
+        
+        
+        //////////////////////////////////////////
+        // TODO : threshNear, threshFar, mirror //
+        //////////////////////////////////////////
+        
+        
+        
         // load grayscale depth image from the kinect source
         depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
         
-        // ------- ROI ----------
-        CvRect cvROI = cvRect(roi.x,roi.y,roi.width,roi.height);
+        // ---------- ROI -----------
+       CvRect cvROI = cvRect(roi.x,roi.y,roi.width,roi.height);
         cvSetImageROI(depthImage.getCvImage(),cvROI);
         
-        // Threshold depth image
         //thresholdImage = depthImage;
         depthImage.threshold(threshold);
-                
         // -------- END ROI -----------
+        
+        // Optimize blob options
+        if (bDilate){
+            for(int i = 0; i < nbPass; i++){
+                depthImage.dilate();
+            }
+        }
+        
+        if (bErode) {
+            for(int i = 0; i < nbPass; i++){
+                depthImage.erode();
+            }
+        }
         
         // update the cv images
         depthImage.flagImageChanged();
-
+        
         //find blob in ROI
         contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 1, false);
     }
-    
-    
-    
-//////////////////////////////
-//////////    //cvDrawContours(<#CvArr *img#>, <#CvSeq *contour#>, <#CvScalar external_color#>, <#CvScalar hole_color#>, <#int max_level#>)
-///////////////////////////////
-    /////////cvResetImageROI( src );
-
     
     
     if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
@@ -82,7 +96,7 @@ void kinectTracker::update() {
 }
 
 void kinectTracker::draw() {
-
+    
 }
 
 void kinectTracker::draw(float _x, float _y, float _w, float _h) {
@@ -91,10 +105,18 @@ void kinectTracker::draw(float _x, float _y, float _w, float _h) {
     ofScale(_w/CAM_WIDTH, _h/CAM_HEIGHT);
     kinect.draw(0, 0);
     roi.draw(0, 0);
-
+    
     if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
-        contourFinder.draw(roi.x, roi.y);
+        ofTranslate(roi.x, roi.y);
+        contourFinder.draw();
+        
+        // Draw blob centroid
+        ofPushStyle();
+        ofSetColor(0, 255, 0);
+        ofCircle(pos.x, pos.y, 3);
+        ofPopStyle();
     }
+    
     ofPopMatrix();
 }
 
