@@ -59,25 +59,12 @@ void kinectTracker::update() {
         depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
         
         // ---------- ROI -----------
-       CvRect cvROI = cvRect(roi.x,roi.y,roi.width,roi.height);
+        CvRect cvROI = cvRect(roi.x,roi.y,roi.width,roi.height);
         cvSetImageROI(depthImage.getCvImage(),cvROI);
         
         //thresholdImage = depthImage;
         depthImage.threshold(threshold);
         // -------- END ROI -----------
-        
-        // Optimize blob options
-        if (bDilate){
-            for(int i = 0; i < nbPass; i++){
-                depthImage.dilate();
-            }
-        }
-        
-        if (bErode) {
-            for(int i = 0; i < nbPass; i++){
-                depthImage.erode();
-            }
-        }
         
         // update the cv images
         depthImage.flagImageChanged();
@@ -86,13 +73,24 @@ void kinectTracker::update() {
         contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 1, false);
     }
     
-    
     if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
     {
+        // Optimize blob options
+        if (bDilate){
+            for(int i = 0; i < 10; i++){
+                depthImage.dilate();    // APP CRASH HERE !!!
+            }
+        }
+        
+        if (bErode) {
+            for(int i = 0; i < 10; i++){
+                depthImage.erode();     // APP CRASH HERE !!!
+            }
+        }
+        
         pos = contourFinder.blobs.at(0).centroid;
         pos.z = kinect.getDistanceAt(pos.x, pos.y);
     }
-    
 }
 
 void kinectTracker::draw() {
