@@ -34,12 +34,15 @@ public:
     
     //---------- Parameters ----------//
     
+    //float threshold;
+//    float nearThreshValue;
+//    float farThreshValue;
     float threshold;
     float minBlobSize;
     bool bDilate;
     bool bErode;
     int nbPass;
-
+    
     ofVec3f pos; // x, y and z position of blob
     
 private:
@@ -51,8 +54,13 @@ private:
     //---------- blob tracking with ofxKinect and ofxOpenCV ----------//
     
     ofxCvGrayscaleImage depthImage; // grayscale depth image
-    ofxCvGrayscaleImage thresholdImage; // average threshold
+    //ofxCvGrayscaleImage threshNear;
+    //ofxCvGrayscaleImage threshFar;
+    ofxCvGrayscaleImage thresholdImage;
     ofxCvContourFinder contourFinder; // blob detection
+    //ofxCvGrayscaleImage roiImage;
+
+    
 };
 
 #endif /* defined(__ofOscKinect__ROI__) */
