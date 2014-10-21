@@ -56,7 +56,8 @@ public:
     int canvasTheme;
     
     ofxUICanvas *kinectUI;
-    ofxUICanvas *configUI;
+    ofxUICanvas *configUI1;
+    ofxUICanvas *configUI2;
     ofxUICanvas *effectsUI;
     ofxUICanvas *helpUI;
     
