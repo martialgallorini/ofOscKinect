@@ -44,12 +44,16 @@ public:
     int oscPort;
     
     float lastTimeCheck;
+    float standByTime;
     bool bSetupMode;
     
     vector<string> effects;
     
     int effectNumber;
     
+    float scaledDistance;
+    float scaledPosX;
+    float scaledPosY;
     
     //---------- GUI ----------//
     

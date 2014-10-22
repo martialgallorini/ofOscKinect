@@ -13,13 +13,18 @@ void ofApp::setup(){
     cvKinect.setup();
     
     lastTimeCheck = ofGetElapsedTimeMillis();
+    standByTime = ofGetElapsedTimeMillis();
     effectNumber = 0;
     
-    oscHost = "192.168.4.190";
+    oscHost = "192.168.5.96";
     oscPort = 3333;
     oscSender.setup(oscHost, oscPort);
     
     bSetupMode = false;
+    
+    scaledDistance = 0;
+    scaledPosX = 0;
+    scaledPosY = 0;
     
     setupUI();
     
@@ -37,7 +42,7 @@ void ofApp::setupUI() {
     kinectUI->setName("KINECT INFO");
     kinectUI->addLabel("SENSOR");
     kinectUI->addSpacer();
-    //kinectUI->add2DPad("POSITION", ofPoint(0, cvKinect.roi.width), ofPoint(0, cvKinect.roi.height), &cvKinect.pos, 480, 210);
+    kinectUI->add2DPad("POSITION", ofPoint(cvKinect.roi.x, 230), ofPoint(cvKinect.roi.y, 300), &cvKinect.pos, 480, 210);
     kinectUI->addSlider("DISTANCE", NEAR_CLIP, FAR_CLIP, &cvKinect.pos.z);
     
     // Help GUI
@@ -83,8 +88,8 @@ void ofApp::setupUI() {
     configUI2->addLabel("BLOB DETECTION");
     configUI2->addSpacer();
     configUI2->addSlider("Min blob size", 0.f, 20000.f, &cvKinect.minBlobSize);
-    configUI2->addSlider("Threshold", 0.f, 255.f, &cvKinect.threshold);
-    //configUI2->addRangeSlider("Threshold", 0, 1500, &cvKinect.nearThreshValue, &cvKinect.farThreshValue);
+    //configUI2->addSlider("Threshold", 0.f, 255.f, &cvKinect.threshValue);
+    configUI2->addRangeSlider("Threshold", 0, 300, &cvKinect.farThreshValue, &cvKinect.nearThreshValue);
     
     configUI2->addLabel("OPTIMIZE");
     configUI2->addSpacer();
@@ -106,7 +111,7 @@ void ofApp::setupUI() {
     effects.push_back("GLITCH FBO COMPOSITE");
     effects.push_back("RUTT ETRA");
     effects.push_back("CUBE MAP");
-    effects.push_back("LINE SCREEN");
+    effects.push_back("HATCHED SCREEN");
     effects.push_back("DENT");
     
     effectsUI = new ofxUICanvas(configUI2->getRect()->getX() + configUI2->getRect()->getWidth() +5, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
@@ -116,10 +121,9 @@ void ofApp::setupUI() {
     effectsUI->addSpacer();
     effectsRadio = effectsUI->addRadio("INTERFERENCE TYPE", effects, OFX_UI_ORIENTATION_VERTICAL);
     effectsRadio->activateToggle(effects.at(effectNumber));
-    effectsUI->addSlider("TRIGGER 1", 0, 1, &cvKinect.pos.z);
-    effectsUI->addSlider("TRIGGER 2", 0, 1, &cvKinect.pos.x);
-    effectsUI->addSlider("TRIGGER 3", 0, 1, &cvKinect.pos.y);
-    
+    effectsUI->addSlider("TRIGGER 1", 0, 1, &scaledDistance);
+    effectsUI->addSlider("TRIGGER 2", 0, 1, &scaledPosX);
+    effectsUI->addSlider("TRIGGER 3", 0, 1, &scaledPosY);
 }
 
 
@@ -128,40 +132,71 @@ void ofApp::update(){
     
     cvKinect.update();
     
-//    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT)
-//    {
-//        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
-//        if (effectNumber < 7)
-//        {
-//            effectNumber++;
-//        }
-//        else
-//        {
-//            effectNumber = 0;
-//        }
-//        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
-//        sel->activateToggle(effects.at(effectNumber));
-//        lastTimeCheck = ofGetElapsedTimeMillis();
-//    }
-//    
-//    // Send OSC values
-//    sendOsc("/vidMap/kinect/distance", ofMap(cvKinect.pos.z, 1100, 500, 1, 0));
-//    sendOsc("/vidMap/kinect/x", ofMap(cvKinect.pos.x, 250, 500, 0, 1));
-//    sendOsc("/vidMap/kinect/y", ofMap(cvKinect.pos.y, 285, 380, 0, 1));
+    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT)
+    {
+        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
+        if (effectNumber < 7)
+        {
+            effectNumber++;
+        }
+        else
+        {
+            effectNumber = 0;
+        }
+        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
+        sel->activateToggle(effects.at(effectNumber));
+        lastTimeCheck = ofGetElapsedTimeMillis();
+    }
+    
+    // Update normalized values
+    ofxUISlider *slider = (ofxUISlider *)kinectUI->getWidget("DISTANCE");
+    scaledDistance = slider->getNormalizedValue();
+    
+    ofxUI2DPad *pad = (ofxUI2DPad *)kinectUI->getWidget("POSITION");
+    scaledPosX = pad->getValue().x;
+    scaledPosY = pad->getValue().y;
+    
+    // Send OSC normalized values
+    if(cvKinect.getNbBlobs() > 0)
+    {
+        if(cvKinect.getNbBlobs() > 1)
+        {
+            sendOsc("/vidMap/clip/next", 1);
+        }
+        else
+        {
+            sendOsc("/vidMap/clip/next", 0);
+        }
+
+        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 1);
+        standByTime = ofGetElapsedTimeMillis();
+    }
+    else
+    {
+        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
+        if (ofGetElapsedTimeMillis() - standByTime > TIMEOUT)
+        {
+            sendOsc("/vidMap/clip/next", 1);
+            sendOsc("/vidMap/clip/next", 0);
+            standByTime = ofGetElapsedTimeMillis();
+        }
+    }
+    
+    sendOsc("/vidMap/kinect/distance", scaledDistance);
+    sendOsc("/vidMap/kinect/x", scaledPosX);
+    sendOsc("/vidMap/kinect/y", scaledPosY);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw()
 {
     cvKinect.draw(10, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
-    //cvKinect.drawDepth(10, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
 void ofApp::exit()
 {
-    //cvKinect.close();
-    configUI1->saveSettings("config1.xml");
-    configUI2->saveSettings("config2.xml");
+    //configUI1->saveSettings("config1.xml");
+    //configUI2->saveSettings("config2.xml");
 }
 
 void ofApp::guiEvent(ofxUIEventArgs &e)
@@ -191,7 +226,8 @@ void ofApp::keyPressed(int key)
             ofToggleFullscreen();
             break;
         case 's':
-            configUI1->saveSettings("config.xml");
+            configUI1->saveSettings("config1.xml");
+            configUI2->saveSettings("config2.xml");
             break;
         case 'd':
             loadDefaultConfig();
@@ -225,9 +261,8 @@ void ofApp::loadDefaultConfig()
     cvKinect.roi.width = 640;
     cvKinect.roi.height = 480;
     
-//    cvKinect.nearThreshValue = 10;
-//    cvKinect.farThreshValue = 1500;
-    cvKinect.threshold = 10;
+    cvKinect.nearThreshValue = 0;
+    cvKinect.farThreshValue = 300;
     
     cvKinect.minBlobSize = 5000.f;
     
