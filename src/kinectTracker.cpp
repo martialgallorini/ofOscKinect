@@ -25,19 +25,16 @@ void kinectTracker::setup() {
     kinect.setLed(ofxKinect::LED_OFF);
     
     depthImage.allocate(kinect.width, kinect.height);
-//    threshFar.allocate(kinect.width, kinect.height);
-//    threshNear.allocate(kinect.width, kinect.height);
-    thresholdImage.allocate(kinect.width, kinect.height);
+    nearThresholdImage.allocate(kinect.width, kinect.height);
+    farThresholdImage.allocate(kinect.width, kinect.height);
     
-    //threshold = 10;
-    threshold = 10;
-//    nearThreshValue = 10;
-//    farThreshValue = 1000;
+    farThreshValue = 0;
+    nearThreshValue = 300;
 
     minBlobSize = 5000.f;
     bDilate = false;
     bErode = false;
-    
+        
     pos = ofVec3f(0);
 
     nbPass = 1;
@@ -54,38 +51,28 @@ void kinectTracker::update() {
     
     if(kinect.isFrameNew())
     {
-        
-        
-        
-        //////////////////////////////////////////
-        // TODO : threshNear, threshFar, mirror //
-        //////////////////////////////////////////
-        
-        
-        
         // load grayscale depth image from the kinect source
         depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-//      depthImage.mirror(false, true);
         
-        // ---------- ROI -----------
+        // problem : unconsistent distance detection when flipping image
+        //depthImage.mirror(false, true);
+        
+        // Region of Interest
         ofRectangle roiMat = ofRectangle(roi.x, roi.y, roi.width, roi.height);
         depthImage.setROI(roiMat);
-        thresholdImage.setROI(roiMat);
-//        threshNear.setROI(roiMat);
-//        threshFar.setROI(roiMat);
+        nearThresholdImage.setROI(roiMat);
+        farThresholdImage.setROI(roiMat);
         
-        // threshold
-//        threshNear = depthImage;
-//        threshFar = depthImage;
-//        threshNear.threshold(nearThreshValue);
-//        threshFar.threshold(farThreshValue, true);
-        thresholdImage = depthImage;
-        thresholdImage.threshold(threshold);
+        // Threshold
+        nearThresholdImage = depthImage;
+        farThresholdImage = depthImage;
+        nearThresholdImage.threshold(nearThreshValue, true);
+        farThresholdImage.threshold(farThreshValue);
+
+        // Combine thresholded images
+        cvAnd(nearThresholdImage.getCvImage(), farThresholdImage.getCvImage(), depthImage.getCvImage(), NULL);
         
-        // combine thresholded images
-        //cvAnd(threshNear.getCvImage(), threshFar.getCvImage(), depthImage.getCvImage(), NULL);
-        
-        // Optimize blob options
+        // Optimize blob filters
         if (bDilate){
             for(int i = 0; i < nbPass; i++){
                 depthImage.dilate();
@@ -102,19 +89,30 @@ void kinectTracker::update() {
         depthImage.flagImageChanged();
         
         //find blob in ROI
-        contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 1, false);
+        contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 2, false);
+        
+        depthImage.resetROI();
+        nearThresholdImage.resetROI();
+        farThresholdImage.resetROI();
+
     }
     
     if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
     {
         pos = contourFinder.blobs.at(0).centroid;
-        pos.z = kinect.getDistanceAt(pos.x, pos.y);
+        // blobs will be shifted by the ROI offset, so if the ROI starts at x = 100, then a blob that normally is at position x = 150
+        // is now at position x = 50, so we need to add roi.x to blob x position to make it in the right place again.
+        pos.z = kinect.getDistanceAt(pos.x + roi.x, pos.y + roi.y);
     }
     else
     {
         pos = ofVec3f(0);
     }
 
+}
+
+int kinectTracker::getNbBlobs() {
+    return contourFinder.nBlobs;
 }
 
 void kinectTracker::draw() {

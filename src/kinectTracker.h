@@ -28,16 +28,15 @@ public:
     void draw();
     void draw(float _x, float _y, float _w, float _h);
     void drawDepth(float _x, float _y, float _w, float _h);
+    int getNbBlobs();
     //void close();
 
     ROI roi;
     
     //---------- Parameters ----------//
     
-    //float threshold;
-//    float nearThreshValue;
-//    float farThreshValue;
-    float threshold;
+    float nearThreshValue;
+    float farThreshValue;
     float minBlobSize;
     bool bDilate;
     bool bErode;
@@ -54,13 +53,9 @@ private:
     //---------- blob tracking with ofxKinect and ofxOpenCV ----------//
     
     ofxCvGrayscaleImage depthImage; // grayscale depth image
-    //ofxCvGrayscaleImage threshNear;
-    //ofxCvGrayscaleImage threshFar;
-    ofxCvGrayscaleImage thresholdImage;
+    ofxCvGrayscaleImage nearThresholdImage;
+    ofxCvGrayscaleImage farThresholdImage;
     ofxCvContourFinder contourFinder; // blob detection
-    //ofxCvGrayscaleImage roiImage;
-
-    
 };
 
 #endif /* defined(__ofOscKinect__ROI__) */
