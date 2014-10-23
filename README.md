@@ -1,14 +1,11 @@
 ofOscKinect
 ===========
 
-............ Work in progress !!! ...........
-
 
 Kinect user interface that sends OSC commands relative to openCV detected blobs
+Enable use of region of interest (ROI) to limit detectino area and dilate and erode filters to optimaize blob shape.
 
-Devellopped with openFrameworks 0.8.3 under MacOSX Mavericks and XCode 5
-
-Using addons :
+Developped with openFrameworks 0.8.4 under MacOSX Mavericks and XCode 6
 
 Core oF addons :
 - ofxKinect
@@ -17,7 +14,7 @@ Core oF addons :
 - ofxOsc
 
 External addons :
-- ofxUI from Reza Ali (https://github.com/rezaali/ofxUI)
+- ofxUI from Reza Ali - https://github.com/rezaali/ofxUI
 
 
 TODO
