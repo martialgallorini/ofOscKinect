@@ -95,7 +95,6 @@ void ofApp::setupUI() {
     configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass dilate", 0, 50, &cvKinect.nbDilate, 250, 17));
     configUI2->addToggle("Erode", &cvKinect.bErode, 17, 17);
     configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass erode", 0, 50, &cvKinect.nbErode, 248, 17));
-    //configUI2->addIntSlider("Nb pass erode", 0, 50, &cvKinect.nbPass);
     configUI2->addSpacer();
     configUI2->addLabelButton("SAVE", false);
     configUI2->addLabelButton("LOAD", false);
@@ -105,12 +104,7 @@ void ofApp::setupUI() {
     
     // Effects panel
     
-    effects.push_back("CITY LIGHTS");
-    effects.push_back("HEXAGONAL PIXELLATE");
     effects.push_back("TRACER");
-    effects.push_back("GLITCH FBO COMPOSITE");
-    effects.push_back("RUTT ETRA");
-    effects.push_back("CUBE MAP");
     effects.push_back("HATCHED SCREEN");
     effects.push_back("DENT");
     
@@ -132,11 +126,11 @@ void ofApp::update(){
     
     cvKinect.update();
     
-    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT / 2 || cvKinect.getNbBlobs() > 1)
+    if (ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT / 2 || cvKinect.getNbBlobs() > 1)
     {
-        // Every minute OR when 2 blobs detected, change effect
+        // Every 35 seconds OR when 2 blobs detected, change effect
         sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
-        if (effectNumber < 7)
+        if (effectNumber < 2)
         {
             effectNumber++;
         }
@@ -254,7 +248,7 @@ void ofApp::loadDefaultConfig()
     cvKinect.nbDilate = 0;
     cvKinect.nbErode = 0;
     
-    oscHost = "192.168.5.81";
+    oscHost = "192.168.5.96";
     oscPort = 3333;
     
     
