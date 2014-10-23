@@ -27,7 +27,6 @@ void ofApp::setup(){
     scaledPosY = 0;
     
     setupUI();
-    
 }
 
 
@@ -90,17 +89,18 @@ void ofApp::setupUI() {
     configUI2->addSlider("Min blob size", 0.f, 20000.f, &cvKinect.minBlobSize);
     //configUI2->addSlider("Threshold", 0.f, 255.f, &cvKinect.threshValue);
     configUI2->addRangeSlider("Threshold", 0, 300, &cvKinect.farThreshValue, &cvKinect.nearThreshValue);
-    
     configUI2->addLabel("OPTIMIZE");
     configUI2->addSpacer();
-    configUI2->addToggle("Dilate", &cvKinect.bDilate, 20, 20);
-    configUI2->addToggle("Erode", &cvKinect.bErode, 20, 20);
-    configUI2->addIntSlider("Pass number", 0, 50, &cvKinect.nbPass);
+    configUI2->addToggle("Dilate", &cvKinect.bDilate, 17, 17);
+    configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass dilate", 0, 50, &cvKinect.nbDilate, 250, 17));
+    configUI2->addToggle("Erode", &cvKinect.bErode, 17, 17);
+    configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass erode", 0, 50, &cvKinect.nbErode, 248, 17));
+    //configUI2->addIntSlider("Nb pass erode", 0, 50, &cvKinect.nbPass);
     configUI2->addSpacer();
     configUI2->addLabelButton("SAVE", false);
     configUI2->addLabelButton("LOAD", false);
     configUI2->addLabelButton("LOAD DEFAULTS", false);
-
+    
     configUI2->loadSettings("config2.xml");
     
     // Effects panel
@@ -132,8 +132,9 @@ void ofApp::update(){
     
     cvKinect.update();
     
-    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT)
+    if ( ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT / 2 || cvKinect.getNbBlobs() > 1)
     {
+        // Every minute OR when 2 blobs detected, change effect
         sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
         if (effectNumber < 7)
         {
@@ -157,29 +158,13 @@ void ofApp::update(){
     scaledPosY = pad->getValue().y;
     
     // Send OSC normalized values
-    if(cvKinect.getNbBlobs() > 0)
+    
+    if (ofGetElapsedTimeMillis() - standByTime > TIMEOUT)
     {
-        if(cvKinect.getNbBlobs() > 1)
-        {
-            sendOsc("/vidMap/clip/next", 1);
-        }
-        else
-        {
-            sendOsc("/vidMap/clip/next", 0);
-        }
-
-        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 1);
+        // Every 1m14s play next clip
+        sendOsc("/vidMap/clip/next", 1);
+        sendOsc("/vidMap/clip/next", 0);
         standByTime = ofGetElapsedTimeMillis();
-    }
-    else
-    {
-        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
-        if (ofGetElapsedTimeMillis() - standByTime > TIMEOUT)
-        {
-            sendOsc("/vidMap/clip/next", 1);
-            sendOsc("/vidMap/clip/next", 0);
-            standByTime = ofGetElapsedTimeMillis();
-        }
     }
     
     sendOsc("/vidMap/kinect/distance", scaledDistance);
@@ -266,7 +251,8 @@ void ofApp::loadDefaultConfig()
     
     cvKinect.minBlobSize = 5000.f;
     
-    cvKinect.nbPass = 1;
+    cvKinect.nbDilate = 0;
+    cvKinect.nbErode = 0;
     
     oscHost = "192.168.5.81";
     oscPort = 3333;
@@ -315,6 +301,6 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::dragEvent(ofDragInfo dragInfo){
     
 }

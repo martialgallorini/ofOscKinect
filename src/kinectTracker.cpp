@@ -37,7 +37,8 @@ void kinectTracker::setup() {
         
     pos = ofVec3f(0);
 
-    nbPass = 1;
+    nbDilate = 0;
+    nbErode = 0;
     
     roi.x = 0;
     roi.y = 0;
@@ -74,13 +75,13 @@ void kinectTracker::update() {
         
         // Optimize blob filters
         if (bDilate){
-            for(int i = 0; i < nbPass; i++){
+            for(int i = 0; i < nbDilate; i++){
                 depthImage.dilate();
             }
         }
         
         if (bErode) {
-            for(int i = 0; i < nbPass; i++){
+            for(int i = 0; i < nbErode; i++){
                 depthImage.erode();
             }
         }
@@ -101,7 +102,7 @@ void kinectTracker::update() {
     {
         pos = contourFinder.blobs.at(0).centroid;
         // blobs will be shifted by the ROI offset, so if the ROI starts at x = 100, then a blob that normally is at position x = 150
-        // is now at position x = 50, so we need to add roi.x to blob x position to make it in the right place again.
+        // is now at position x = 50, so we need to add roi.x to blob x position to see it in its right place again.
         pos.z = kinect.getDistanceAt(pos.x + roi.x, pos.y + roi.y);
     }
     else

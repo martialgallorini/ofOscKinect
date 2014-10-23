@@ -40,7 +40,8 @@ public:
     float minBlobSize;
     bool bDilate;
     bool bErode;
-    int nbPass;
+    int nbDilate;
+    int nbErode;
     
     ofVec3f pos; // x, y and z position of blob
     
