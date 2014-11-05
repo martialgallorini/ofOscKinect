@@ -43,13 +43,13 @@ public:
     string oscHost;
     int oscPort;
     
-    float lastTimeCheck;
-    float standByTime;
+//    float lastTimeCheck;
+//    float standByTime;
     bool bSetupMode;
     
     vector<string> effects;
     
-    int effectNumber;
+//    int effectNumber;
     
     float scaledDistance;
     float scaledPosX;

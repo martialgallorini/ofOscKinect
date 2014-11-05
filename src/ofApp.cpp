@@ -12,9 +12,9 @@ void ofApp::setup(){
     
     cvKinect.setup();
     
-    lastTimeCheck = ofGetElapsedTimeMillis();
-    standByTime = ofGetElapsedTimeMillis();
-    effectNumber = 0;
+//    lastTimeCheck = ofGetElapsedTimeMillis();
+//    standByTime = ofGetElapsedTimeMillis();
+//    effectNumber = 0;
     
     oscHost = "192.168.5.96";
     oscPort = 3333;
@@ -54,8 +54,8 @@ void ofApp::setupUI() {
     helpUI->addLabel("distance from objet (float) : /vidMap/kinect/distance");
     helpUI->addLabel("position x of objet (float) : /vidMap/kinect/x");
     helpUI->addLabel("position y of objet (float) : /vidMap/kinect/y");
-    helpUI->addLabel("next clip : /vidMap/clip/next");
-    helpUI->addLabel("activate / deactivate effect number N (boolean) : /vidMap/fx/N");
+//    helpUI->addLabel("next clip : /vidMap/clip/next");
+//    helpUI->addLabel("activate / deactivate effect number N (boolean) : /vidMap/fx/N");
     helpUI->setVisible(false);
     
     // Config GUI 1
@@ -104,17 +104,17 @@ void ofApp::setupUI() {
     
     // Effects panel
     
-    effects.push_back("TRACER");
-    effects.push_back("HATCHED SCREEN");
-    effects.push_back("DENT");
+//    effects.push_back("TRACER");
+//    effects.push_back("HATCHED SCREEN");
+//    effects.push_back("DENT");
     
     effectsUI = new ofxUICanvas(configUI2->getRect()->getX() + configUI2->getRect()->getWidth() +5, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
     effectsUI->setName("EFFECTS PANEL");
     effectsUI->setWidgetSpacing(10);
     effectsUI->addLabel("EFFECTS");
     effectsUI->addSpacer();
-    effectsRadio = effectsUI->addRadio("INTERFERENCE TYPE", effects, OFX_UI_ORIENTATION_VERTICAL);
-    effectsRadio->activateToggle(effects.at(effectNumber));
+//    effectsRadio = effectsUI->addRadio("INTERFERENCE TYPE", effects, OFX_UI_ORIENTATION_VERTICAL);
+//    effectsRadio->activateToggle(effects.at(effectNumber));
     effectsUI->addSlider("TRIGGER 1", 0, 1, &scaledDistance);
     effectsUI->addSlider("TRIGGER 2", 0, 1, &scaledPosX);
     effectsUI->addSlider("TRIGGER 3", 0, 1, &scaledPosY);
@@ -126,21 +126,30 @@ void ofApp::update(){
     
     cvKinect.update();
     
-    if (ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT / 2 || cvKinect.getNbBlobs() > 1)
+//    if (ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT / 2 || cvKinect.getNbBlobs() > 1)
+//    {
+//        // Every 35 seconds OR when 2 blobs detected, change effect
+//        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
+//        if (effectNumber < 2)
+//        {
+//            effectNumber++;
+//        }
+//        else
+//        {
+//            effectNumber = 0;
+//        }
+//        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
+//        sel->activateToggle(effects.at(effectNumber));
+//        lastTimeCheck = ofGetElapsedTimeMillis();
+//    }
+    
+    if (cvKinect.getNbBlobs() > 0)
     {
-        // Every 35 seconds OR when 2 blobs detected, change effect
-        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
-        if (effectNumber < 2)
-        {
-            effectNumber++;
-        }
-        else
-        {
-            effectNumber = 0;
-        }
-        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
-        sel->activateToggle(effects.at(effectNumber));
-        lastTimeCheck = ofGetElapsedTimeMillis();
+        sendOsc("/vidMap/fx/1", 1);
+    }
+    else
+    {
+        sendOsc("/vidMap/fx/1", 0);
     }
     
     // Update normalized values
@@ -153,13 +162,13 @@ void ofApp::update(){
     
     // Send OSC normalized values
     
-    if (ofGetElapsedTimeMillis() - standByTime > TIMEOUT)
-    {
-        // Every 1m14s play next clip
-        sendOsc("/vidMap/clip/next", 1);
-        sendOsc("/vidMap/clip/next", 0);
-        standByTime = ofGetElapsedTimeMillis();
-    }
+//    if (ofGetElapsedTimeMillis() - standByTime > TIMEOUT)
+//    {
+//        // Every 1m14s play next clip
+//        sendOsc("/vidMap/clip/next", 1);
+//        sendOsc("/vidMap/clip/next", 0);
+//        standByTime = ofGetElapsedTimeMillis();
+//    }
     
     sendOsc("/vidMap/kinect/distance", scaledDistance);
     sendOsc("/vidMap/kinect/x", scaledPosX);
