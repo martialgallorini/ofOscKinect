@@ -2,8 +2,8 @@ ofOscKinect
 ===========
 
 
-Kinect user interface that sends OSC commands relative to openCV detected blobs
-Enable use of region of interest (ROI) to limit detectino area and dilate and erode filters to optimaize blob shape.
+Kinect user interface that sends OSC commands relative to openCV detected blobs.
+Possible to use of region of interest (ROI) to limit detection area and dilate and erode filters to optimaize blob shape.
 
 Developped with openFrameworks 0.8.4 under MacOSX Mavericks and XCode 6
 
@@ -20,13 +20,13 @@ External addons :
 TODO
 -------
 
-- add record / play depth image function to use it as « away from kinect »  debugging sample
+- add record / play depth image function to use it as « away from kinect » debugging sample
 
 
 License
 -------
 
-auditControl - Graphical user interface for controlling audiovisual devices
+ofOscKinect - Graphical user interface for Kinect and CV detection with OSC features
 
 Martial GALLORINI (http://www.martialgallorini.com/)
 
