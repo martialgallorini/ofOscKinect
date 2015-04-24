@@ -1,3 +1,5 @@
+![ScreenShot](ofOscKinect.png)
+
 ofOscKinect
 ===========
 
