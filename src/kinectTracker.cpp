@@ -18,10 +18,10 @@ kinectTracker::~kinectTracker() {
 }
 
 void kinectTracker::setup() {
-    
     kinect.init(true, true, true); // set first value to true to show IR image of false for RGB
     kinect.setDepthClipping(NEAR_CLIP, FAR_CLIP);
     kinect.open();
+        
     kinect.setLed(ofxKinect::LED_OFF);
     
     depthImage.allocate(kinect.width, kinect.height);
