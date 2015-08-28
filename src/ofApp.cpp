@@ -5,18 +5,12 @@ void ofApp::setup(){
     
     ofDisableSmoothing();
     ofDisableAlphaBlending();
-    //glEnable(GL_LIGHTING);
     
     ofSetFrameRate(FRAMERATE);
-    //ofBackground(0, 0, 250);
     
     cvKinect.setup();
     
-//    lastTimeCheck = ofGetElapsedTimeMillis();
-//    standByTime = ofGetElapsedTimeMillis();
-//    effectNumber = 0;
-    
-    oscHost = "192.168.5.96";
+    oscHost = "127.0.0.1";
     oscPort = 3333;
     oscSender.setup(oscHost, oscPort);
     
@@ -44,20 +38,6 @@ void ofApp::setupUI() {
     kinectUI->add2DPad("POSITION", ofPoint(cvKinect.roi.x, 230), ofPoint(cvKinect.roi.y, 300), &cvKinect.pos, 480, 210);
     kinectUI->addSlider("DISTANCE", NEAR_CLIP, FAR_CLIP, &cvKinect.pos.z);
     
-    // Help GUI
-    helpUI = new ofxUICanvas(517, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
-    helpUI->setName("HELP PANEL");
-    helpUI->setWidgetSpacing(10);
-    helpUI->setWidgetFontSize(OFX_UI_FONT_SMALL);
-    helpUI->addLabel("OSC PARAMETERS");
-    helpUI->addSpacer();
-    helpUI->addLabel("distance from objet (float) : /vidMap/kinect/distance");
-    helpUI->addLabel("position x of objet (float) : /vidMap/kinect/x");
-    helpUI->addLabel("position y of objet (float) : /vidMap/kinect/y");
-//    helpUI->addLabel("next clip : /vidMap/clip/next");
-//    helpUI->addLabel("activate / deactivate effect number N (boolean) : /vidMap/fx/N");
-    helpUI->setVisible(false);
-    
     // Config GUI 1
     
     configUI1 = new ofxUICanvas(10,  389, ofGetWidth()/3 - 15, CANVAS_HEIGHT);
@@ -70,12 +50,6 @@ void ofApp::setupUI() {
     configUI1->addSlider("ROI - position Y", 0.f, CAM_HEIGHT, &cvKinect.roi.y);
     configUI1->addSlider("ROI - width", 0.f, CAM_WIDTH, &cvKinect.roi.width);
     configUI1->addSlider("ROI - height", 0.f, CAM_HEIGHT, &cvKinect.roi.height);
-    configUI1->addLabel("OSC CONFIGURATION");
-    configUI1->addSpacer();
-    configUI1->addLabel("IP Address : ");
-    configUI1->addWidgetRight(new ofxUITextInput("OSC IP", oscHost, 100));
-    configUI1->addLabel("Port : ");
-    configUI1->addWidgetRight(new ofxUITextInput("OSC PORT", ofToString(oscPort), 100));
     
     configUI1->loadSettings("config1.xml");
     
@@ -101,23 +75,27 @@ void ofApp::setupUI() {
     configUI2->addLabelButton("LOAD DEFAULTS", false);
     
     configUI2->loadSettings("config2.xml");
+
     
-    // Effects panel
+    // Help GUI
     
-//    effects.push_back("TRACER");
-//    effects.push_back("HATCHED SCREEN");
-//    effects.push_back("DENT");
-    
-    effectsUI = new ofxUICanvas(configUI2->getRect()->getX() + configUI2->getRect()->getWidth() +5, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
-    effectsUI->setName("EFFECTS PANEL");
-    effectsUI->setWidgetSpacing(10);
-    effectsUI->addLabel("EFFECTS");
-    effectsUI->addSpacer();
-//    effectsRadio = effectsUI->addRadio("INTERFERENCE TYPE", effects, OFX_UI_ORIENTATION_VERTICAL);
-//    effectsRadio->activateToggle(effects.at(effectNumber));
-    effectsUI->addSlider("TRIGGER 1", 0, 1, &scaledDistance);
-    effectsUI->addSlider("TRIGGER 2", 0, 1, &scaledPosX);
-    effectsUI->addSlider("TRIGGER 3", 0, 1, &scaledPosY);
+    helpUI = new ofxUICanvas(configUI2->getRect()->getX() + configUI1->getRect()->getWidth() + 13, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
+    helpUI->setName("HELP PANEL");
+    helpUI->setWidgetSpacing(10);
+    helpUI->setWidgetFontSize(OFX_UI_FONT_SMALL);
+    helpUI->addLabel("OSC PARAMETERS");
+    helpUI->addSpacer();
+    helpUI->addLabel("IP Address : 127.0.0.1");
+    helpUI->addLabel("Port : 3333");
+    helpUI->addLabel("");
+    helpUI->addLabel("distance from objet (float) :");
+    helpUI->addLabel("/kinect/distance");
+    helpUI->addLabel("");
+    helpUI->addLabel("position x of objet (float) :");
+    helpUI->addLabel("/kinect/x");
+    helpUI->addLabel("");
+    helpUI->addLabel("position y of objet (float) :");
+    helpUI->addLabel("/kinect/y");
 }
 
 
@@ -125,32 +103,6 @@ void ofApp::setupUI() {
 void ofApp::update(){
     
     cvKinect.update();
-    
-//    if (ofGetElapsedTimeMillis() - lastTimeCheck > TIMEOUT / 2 || cvKinect.getNbBlobs() > 1)
-//    {
-//        // Every 35 seconds OR when 2 blobs detected, change effect
-//        sendOsc("/vidMap/fx/" + ofToString(effectNumber + 1), 0);
-//        if (effectNumber < 2)
-//        {
-//            effectNumber++;
-//        }
-//        else
-//        {
-//            effectNumber = 0;
-//        }
-//        ofxUIRadio *sel = (ofxUIRadio *)effectsUI->getWidget("INTERFERENCE TYPE");
-//        sel->activateToggle(effects.at(effectNumber));
-//        lastTimeCheck = ofGetElapsedTimeMillis();
-//    }
-    
-    if (cvKinect.getNbBlobs() > 0)
-    {
-        sendOsc("/vidMap/fx/1", 1);
-    }
-    else
-    {
-        sendOsc("/vidMap/fx/1", 0);
-    }
     
     // Update normalized values
     ofxUISlider *slider = (ofxUISlider *)kinectUI->getWidget("DISTANCE");
@@ -160,19 +112,9 @@ void ofApp::update(){
     scaledPosX = pad->getValue().x;
     scaledPosY = pad->getValue().y;
     
-    // Send OSC normalized values
-    
-//    if (ofGetElapsedTimeMillis() - standByTime > TIMEOUT)
-//    {
-//        // Every 1m14s play next clip
-//        sendOsc("/vidMap/clip/next", 1);
-//        sendOsc("/vidMap/clip/next", 0);
-//        standByTime = ofGetElapsedTimeMillis();
-//    }
-    
-    sendOsc("/vidMap/kinect/distance", scaledDistance);
-    sendOsc("/vidMap/kinect/x", scaledPosX);
-    sendOsc("/vidMap/kinect/y", scaledPosY);
+    sendOsc("/kinect/distance", scaledDistance);
+    sendOsc("/kinect/x", scaledPosX);
+    sendOsc("/kinect/y", scaledPosY);
 }
 
 //--------------------------------------------------------------
@@ -221,8 +163,6 @@ void ofApp::keyPressed(int key)
             loadDefaultConfig();
             break;
         case 'h':
-            kinectUI->toggleVisible();
-            helpUI->toggleVisible();
             bSetupMode = !bSetupMode;
             break;
         default:
@@ -257,14 +197,9 @@ void ofApp::loadDefaultConfig()
     cvKinect.nbDilate = 0;
     cvKinect.nbErode = 0;
     
-    oscHost = "192.168.5.96";
+    oscHost = "127.0.0.1";
     oscPort = 3333;
     
-    
-    ofxUITextInput *sel = (ofxUITextInput *)configUI1->getWidget("OSC IP");
-    sel->setTextString(oscHost);
-    sel = (ofxUITextInput *)configUI1->getWidget("OSC PORT");
-    sel->setTextString(ofToString(oscPort));
     oscSender.setup(oscHost, oscPort);
 }
 

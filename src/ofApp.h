@@ -5,11 +5,6 @@
 #define CANVAS_WIDTH 497
 #define CANVAS_HEIGHT 369
 #define CANVAS_THEME OFX_UI_THEME_DEFAULT
-//canvasTheme = OFX_UI_THEME_MINYELLOW;
-//canvasTheme = OFX_UI_THEME_MINBLACK;
-//canvasTheme = OFX_UI_THEME_HIPSTER;
-//canvasTheme = OFX_UI_THEME_HACKER;
-
 
 #include "ofMain.h"
 #include "ofxUI.h"
@@ -43,13 +38,9 @@ public:
     string oscHost;
     int oscPort;
     
-//    float lastTimeCheck;
-//    float standByTime;
     bool bSetupMode;
     
     vector<string> effects;
-    
-//    int effectNumber;
     
     float scaledDistance;
     float scaledPosX;
@@ -62,10 +53,8 @@ public:
     ofxUICanvas *kinectUI;
     ofxUICanvas *configUI1;
     ofxUICanvas *configUI2;
-    ofxUICanvas *effectsUI;
     ofxUICanvas *helpUI;
     
-    ofxUIRadio* effectsRadio;
     
     void guiEvent(ofxUIEventArgs &e);
     
