@@ -46,7 +46,8 @@ public:
     ofParameter<int> nbDilate;
     ofParameter<int> nbErode;
     
-    ofParameter<ofVec3f> pos; // x, y and z position of blob
+    // smoothed position of blob
+    ofParameter<ofVec3f> pos;
     
 private:
     

@@ -28,10 +28,7 @@ public:
     void gotMessage(ofMessage msg);
     
     kinectTracker cvKinect;
-    
-    string oscHost;
-    int oscPort;
-    
+        
     //---------- GUI ----------//
     
     ofxPanel gui;

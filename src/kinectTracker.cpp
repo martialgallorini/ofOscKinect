@@ -32,8 +32,8 @@ void kinectTracker::setup() {
     
     parameters.setName("Kinect Parameters");
         
-    parameters.add(nearThreshValue.set("near threshold", 50, 0, 300));
-    parameters.add(farThreshValue.set("far threshold", 130, 0, 300));
+    parameters.add(nearThreshValue.set("near threshold", 258, 0, 400));
+    parameters.add(farThreshValue.set("far threshold", 165, 0, 400));
     parameters.add(minBlobSize.set("min blob size", 5000, 0, 20000));
 
     parameters.add(bDilate.set("dilate", false));
@@ -43,7 +43,6 @@ void kinectTracker::setup() {
     
     parameters.add(pos.set("Blob position", ofVec3f(0,0,0), ofVec3f(0,0,0), ofVec3f(ofGetWidth(), ofGetHeight(), 200)));
 
-    
     roi.x = 0;
     roi.y = 0;
     roi.width = kinect.width;
@@ -104,7 +103,12 @@ void kinectTracker::update() {
     
     if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
     {
-        pos = contourFinder.blobs.at(0).centroid;
+        // get new centroid
+        ofVec3f newPos = contourFinder.blobs.at(0).centroid;
+        
+        // smoothing centroid position
+        pos = pos.get() * 0.7 + newPos * 0.3;
+        
         // blobs will be shifted by the ROI offset, so if the ROI starts at x = 100, then a blob that normally is at position x = 150
         // is now at position x = 50, so we need to add roi.x to blob x position to see it in its right place again.
         ofVec3f v = pos.get();
@@ -123,12 +127,12 @@ int kinectTracker::getNbBlobs() {
 }
 
 void kinectTracker::draw() {
-    ofPushMatrix();
+    //ofPushMatrix();
     depthImage.draw(0, 0);
     roi.draw(0, 0);
     
     if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
-        
+        //ofPushMatrix();
         ofTranslate(roi.x, roi.y);
         contourFinder.draw(0,0);
         
@@ -137,9 +141,10 @@ void kinectTracker::draw() {
         ofSetColor(0, 255, 0);
         ofCircle(pos.get().x, pos.get().y, 3);
         ofPopStyle();
+        //ofPopMatrix();
     }
     
-    ofPopMatrix();
+    //ofPopMatrix();
 }
 
 void kinectTracker::draw(float _x, float _y, float _w, float _h) {

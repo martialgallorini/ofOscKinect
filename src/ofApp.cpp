@@ -10,9 +10,7 @@ void ofApp::setup(){
     
     cvKinect.setup();
     
-    oscHost = "127.0.0.1";
-    oscPort = 3333;
-    oscSender.setup(oscHost, oscPort);
+    oscSender.setup("127.0.0.1", 3333);
     
     bSetupMode = false;
     
@@ -22,8 +20,8 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
-    
+void ofApp::update()
+{
     cvKinect.update();
 }
 
@@ -33,6 +31,10 @@ void ofApp::draw()
     cvKinect.draw(0, 0, 640, 480);
     if (bSetupMode) {
         gui.draw();
+    }
+    if (cvKinect.getNbBlobs() > 0) {
+        sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, 640, 0, 1));
+        sendOsc("/kinect/y", ofMap(cvKinect.pos->y, 0, 480, 0, 1));
     }
 }
 
