@@ -27,6 +27,7 @@ public:
     void update();
     void draw();
     void draw(float _x, float _y, float _w, float _h);
+    void drawDepth();
     void drawDepth(float _x, float _y, float _w, float _h);
     int getNbBlobs();
     //void close();
@@ -35,15 +36,17 @@ public:
     
     //---------- Parameters ----------//
     
-    float nearThreshValue;
-    float farThreshValue;
-    float minBlobSize;
-    bool bDilate;
-    bool bErode;
-    int nbDilate;
-    int nbErode;
+    ofParameterGroup parameters;
+        
+    ofParameter<float> nearThreshValue;
+    ofParameter<float> farThreshValue;
+    ofParameter<float> minBlobSize;
+    ofParameter<bool> bDilate;
+    ofParameter<bool> bErode;
+    ofParameter<int> nbDilate;
+    ofParameter<int> nbErode;
     
-    ofVec3f pos; // x, y and z position of blob
+    ofParameter<ofVec3f> pos; // x, y and z position of blob
     
 private:
     

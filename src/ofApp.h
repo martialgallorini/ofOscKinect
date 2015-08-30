@@ -2,14 +2,10 @@
 
 #define TIMEOUT 30000 // in millisecond = 1m 14s
 #define FRAMERATE 30
-#define CANVAS_WIDTH 497
-#define CANVAS_HEIGHT 369
-#define CANVAS_THEME OFX_UI_THEME_DEFAULT
 
 #include "ofMain.h"
-#include "ofxUI.h"
+#include "ofxGui.h"
 #include "ofxOsc.h"
-#include "ofxXmlSettings.h"
 #include "kinectTracker.h"
 
 
@@ -31,39 +27,50 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    void setupUI();
-    
     kinectTracker cvKinect;
     
     string oscHost;
     int oscPort;
     
-    bool bSetupMode;
-    
-    vector<string> effects;
-    
-    float scaledDistance;
-    float scaledPosX;
-    float scaledPosY;
-    
     //---------- GUI ----------//
     
-    int canvasTheme;
-    
-    ofxUICanvas *kinectUI;
-    ofxUICanvas *configUI1;
-    ofxUICanvas *configUI2;
-    ofxUICanvas *helpUI;
+    ofxPanel gui;
+    ofParameterGroup parameters;
     
     
-    void guiEvent(ofxUIEventArgs &e);
+    
+//    // BLOB position
+//    ofParameter<float> posX;
+//    ofParameter<float> posY;
+//    ofParameter<float> dist;
+//    
+//    // BLOB detection
+//    
+//    ofParameter<float> blobMinSize;
+//    ofParameter<float> farThresh;
+//    ofParameter<float> nearThresh;
+//    ofParameter<bool> bDilate;
+//    ofParameter<float> nbDilate;
+//    ofParameter<bool> bErode;
+//    ofParameter<float> nbErode;
+
+
+
+    
+    
+    // ROI
+    ofParameter<float> roiX;
+    ofParameter<float> roiY;
+    ofParameter<float> roiW;
+    ofParameter<float> roiH;
+    
+    
+    
+    bool bSetupMode;
     
     //---------- OSC ----------//
     
     ofxOscSender oscSender;
     void sendOsc(string key, float val);
-    
-    //---------- XML SETTINGS ----------//
-    void loadDefaultConfig();
     
 };

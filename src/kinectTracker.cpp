@@ -28,22 +28,26 @@ void kinectTracker::setup() {
     nearThresholdImage.allocate(kinect.width, kinect.height);
     farThresholdImage.allocate(kinect.width, kinect.height);
     
-    farThreshValue = 0;
-    nearThreshValue = 300;
-
-    minBlobSize = 5000.f;
-    bDilate = false;
-    bErode = false;
+    // SETUP PARAMETERS
+    
+    parameters.setName("Kinect Parameters");
         
-    pos = ofVec3f(0);
+    parameters.add(nearThreshValue.set("near threshold", 50, 0, 300));
+    parameters.add(farThreshValue.set("far threshold", 130, 0, 300));
+    parameters.add(minBlobSize.set("min blob size", 5000, 0, 20000));
 
-    nbDilate = 0;
-    nbErode = 0;
+    parameters.add(bDilate.set("dilate", false));
+    parameters.add(nbDilate.set("nb dilate pass", 1, 1, 50));
+    parameters.add(bErode.set("erode", false));
+    parameters.add(nbErode.set("nb erode pass", 1, 1, 50));
+    
+    parameters.add(pos.set("Blob position", ofVec3f(0,0,0), ofVec3f(0,0,0), ofVec3f(ofGetWidth(), ofGetHeight(), 200)));
+
     
     roi.x = 0;
     roi.y = 0;
-    roi.width = CAM_WIDTH;
-    roi.height = CAM_HEIGHT;
+    roi.width = kinect.width;
+    roi.height = kinect.height;
 }
 
 void kinectTracker::update() {
@@ -103,7 +107,9 @@ void kinectTracker::update() {
         pos = contourFinder.blobs.at(0).centroid;
         // blobs will be shifted by the ROI offset, so if the ROI starts at x = 100, then a blob that normally is at position x = 150
         // is now at position x = 50, so we need to add roi.x to blob x position to see it in its right place again.
-        pos.z = kinect.getDistanceAt(pos.x + roi.x, pos.y + roi.y);
+        ofVec3f v = pos.get();
+        v.z = kinect.getDistanceAt(pos.get().x + roi.x, pos.get().y + roi.y);
+        pos.set(v);
     }
     else
     {
@@ -117,7 +123,23 @@ int kinectTracker::getNbBlobs() {
 }
 
 void kinectTracker::draw() {
+    //ofPushMatrix();
+    depthImage.draw(0, 0);
+    roi.draw(0, 0);
     
+    if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
+        
+        ofTranslate(roi.x, roi.y);
+        contourFinder.draw(0,0);
+        
+        // Draw blob centroid
+        ofPushStyle();
+        ofSetColor(0, 255, 0);
+        ofCircle(pos.get().x, pos.get().y, 3);
+        ofPopStyle();
+    }
+    
+    //ofPopMatrix();
 }
 
 void kinectTracker::draw(float _x, float _y, float _w, float _h) {
@@ -134,10 +156,20 @@ void kinectTracker::draw(float _x, float _y, float _w, float _h) {
         // Draw blob centroid
         ofPushStyle();
         ofSetColor(0, 255, 0);
-        ofCircle(pos.x, pos.y, 3);
+        ofCircle(pos.get().x, pos.get().y, 3);
         ofPopStyle();
     }
     
+    ofPopMatrix();
+}
+
+void kinectTracker::drawDepth() {
+    ofPushMatrix();
+    kinect.drawDepth(0, 0);
+    //roi.draw(0, 0);
+    if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
+        contourFinder.draw(roi.x, roi.y);
+    }
     ofPopMatrix();
 }
 

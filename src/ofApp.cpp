@@ -16,136 +16,116 @@ void ofApp::setup(){
     
     bSetupMode = false;
     
-    scaledDistance = 0;
-    scaledPosX = 0;
-    scaledPosY = 0;
-    
-    setupUI();
+    parameters.setName("SETTINGS");
+    parameters.add(cvKinect.parameters);
+    gui.setup(parameters);    
 }
 
 
 //--------------------------------------------------------------
 
-void ofApp::setupUI() {
-    
-    // Kinect Infos GUI
-    
-    kinectUI = new ofxUICanvas(517, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
-    kinectUI->setWidgetSpacing(10);
-    kinectUI->setName("KINECT INFO");
-    kinectUI->addLabel("SENSOR");
-    kinectUI->addSpacer();
-    kinectUI->add2DPad("POSITION", ofPoint(cvKinect.roi.x, 230), ofPoint(cvKinect.roi.y, 300), &cvKinect.pos, 480, 210);
-    kinectUI->addSlider("DISTANCE", NEAR_CLIP, FAR_CLIP, &cvKinect.pos.z);
-    
-    // Config GUI 1
-    
-    configUI1 = new ofxUICanvas(10,  389, ofGetWidth()/3 - 15, CANVAS_HEIGHT);
-    configUI1->setName("CONFIG1");
-    configUI1->setWidgetSpacing(10);
-    
-    configUI1->addLabel("ROI PARAMETERS");
-    configUI1->addSpacer();
-    configUI1->addSlider("ROI - position X", 0.f, CAM_WIDTH, &cvKinect.roi.x);
-    configUI1->addSlider("ROI - position Y", 0.f, CAM_HEIGHT, &cvKinect.roi.y);
-    configUI1->addSlider("ROI - width", 0.f, CAM_WIDTH, &cvKinect.roi.width);
-    configUI1->addSlider("ROI - height", 0.f, CAM_HEIGHT, &cvKinect.roi.height);
-    
-    configUI1->loadSettings("config1.xml");
-    
-    // Config GUI 2
-    configUI2 = new ofxUICanvas(configUI1->getRect()->getX() + configUI1->getRect()->getWidth() + 5, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
-    configUI2->setName("CONFIG2");
-    configUI2->setWidgetSpacing(10);
-    
-    configUI2->addLabel("BLOB DETECTION");
-    configUI2->addSpacer();
-    configUI2->addSlider("Min blob size", 0.f, 20000.f, &cvKinect.minBlobSize);
-    //configUI2->addSlider("Threshold", 0.f, 255.f, &cvKinect.threshValue);
-    configUI2->addRangeSlider("Threshold", 0, 300, &cvKinect.farThreshValue, &cvKinect.nearThreshValue);
-    configUI2->addLabel("OPTIMIZE");
-    configUI2->addSpacer();
-    configUI2->addToggle("Dilate", &cvKinect.bDilate, 17, 17);
-    configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass dilate", 0, 50, &cvKinect.nbDilate, 250, 17));
-    configUI2->addToggle("Erode", &cvKinect.bErode, 17, 17);
-    configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass erode", 0, 50, &cvKinect.nbErode, 248, 17));
-    configUI2->addSpacer();
-    configUI2->addLabelButton("SAVE", false);
-    configUI2->addLabelButton("LOAD", false);
-    configUI2->addLabelButton("LOAD DEFAULTS", false);
-    
-    configUI2->loadSettings("config2.xml");
-
-    
-    // Help GUI
-    
-    helpUI = new ofxUICanvas(configUI2->getRect()->getX() + configUI1->getRect()->getWidth() + 13, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
-    helpUI->setName("HELP PANEL");
-    helpUI->setWidgetSpacing(10);
-    helpUI->setWidgetFontSize(OFX_UI_FONT_SMALL);
-    helpUI->addLabel("OSC PARAMETERS");
-    helpUI->addSpacer();
-    helpUI->addLabel("IP Address : 127.0.0.1");
-    helpUI->addLabel("Port : 3333");
-    helpUI->addLabel("");
-    helpUI->addLabel("distance from objet (float) :");
-    helpUI->addLabel("/kinect/distance");
-    helpUI->addLabel("");
-    helpUI->addLabel("position x of objet (float) :");
-    helpUI->addLabel("/kinect/x");
-    helpUI->addLabel("");
-    helpUI->addLabel("position y of objet (float) :");
-    helpUI->addLabel("/kinect/y");
-}
+//void ofApp::setupUI() {
+//    
+//    // Kinect Infos GUI
+//    
+//    kinectUI = new ofxUICanvas(517, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
+//    kinectUI->setWidgetSpacing(10);
+//    kinectUI->setName("KINECT INFO");
+//    kinectUI->addLabel("SENSOR");
+//    kinectUI->addSpacer();
+//    kinectUI->add2DPad("POSITION", ofPoint(cvKinect.roi.x, 230), ofPoint(cvKinect.roi.y, 300), &cvKinect.pos, 480, 210);
+//    kinectUI->addSlider("DISTANCE", NEAR_CLIP, FAR_CLIP, &cvKinect.pos.z);
+//    
+//    // Config GUI 1
+//    
+//    configUI1 = new ofxUICanvas(10,  389, ofGetWidth()/3 - 15, CANVAS_HEIGHT);
+//    configUI1->setName("CONFIG1");
+//    configUI1->setWidgetSpacing(10);
+//    
+//    configUI1->addLabel("ROI PARAMETERS");
+//    configUI1->addSpacer();
+//    configUI1->addSlider("ROI - position X", 0.f, CAM_WIDTH, &cvKinect.roi.x);
+//    configUI1->addSlider("ROI - position Y", 0.f, CAM_HEIGHT, &cvKinect.roi.y);
+//    configUI1->addSlider("ROI - width", 0.f, CAM_WIDTH, &cvKinect.roi.width);
+//    configUI1->addSlider("ROI - height", 0.f, CAM_HEIGHT, &cvKinect.roi.height);
+//    
+//    configUI1->loadSettings("config1.xml");
+//    
+//    // Config GUI 2
+//    configUI2 = new ofxUICanvas(configUI1->getRect()->getX() + configUI1->getRect()->getWidth() + 5, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
+//    configUI2->setName("CONFIG2");
+//    configUI2->setWidgetSpacing(10);
+//    
+//    configUI2->addLabel("BLOB DETECTION");
+//    configUI2->addSpacer();
+//    configUI2->addSlider("Min blob size", 0.f, 20000.f, &cvKinect.minBlobSize);
+//    configUI2->addRangeSlider("Threshold", 0, 300, &cvKinect.farThreshValue, &cvKinect.nearThreshValue);
+//    configUI2->addLabel("OPTIMIZE");
+//    configUI2->addSpacer();
+//    configUI2->addToggle("Dilate", &cvKinect.bDilate, 17, 17);
+//    configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass dilate", 0, 50, &cvKinect.nbDilate, 250, 17));
+//    configUI2->addToggle("Erode", &cvKinect.bErode, 17, 17);
+//    configUI2->addWidgetRight(new ofxUIIntSlider("Nb pass erode", 0, 50, &cvKinect.nbErode, 248, 17));
+//    configUI2->addSpacer();
+//    configUI2->addLabelButton("SAVE", false);
+//    configUI2->addLabelButton("LOAD", false);
+//    configUI2->addLabelButton("LOAD DEFAULTS", false);
+//    
+//    configUI2->loadSettings("config2.xml");
+//
+//    
+//    // Help GUI
+//    
+//    helpUI = new ofxUICanvas(configUI2->getRect()->getX() + configUI1->getRect()->getWidth() + 13, 389, (ofGetWidth() - 20) / 3, CANVAS_HEIGHT);
+//    helpUI->setName("HELP PANEL");
+//    helpUI->setWidgetSpacing(10);
+//    helpUI->setWidgetFontSize(OFX_UI_FONT_SMALL);
+//    helpUI->addLabel("OSC PARAMETERS");
+//    helpUI->addSpacer();
+//    helpUI->addLabel("IP Address : 127.0.0.1");
+//    helpUI->addLabel("Port : 3333");
+//    helpUI->addLabel("");
+//    helpUI->addLabel("distance from objet (float) :");
+//    helpUI->addLabel("/kinect/distance");
+//    helpUI->addLabel("");
+//    helpUI->addLabel("position x of objet (float) :");
+//    helpUI->addLabel("/kinect/x");
+//    helpUI->addLabel("");
+//    helpUI->addLabel("position y of objet (float) :");
+//    helpUI->addLabel("/kinect/y");
+//}
 
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
     cvKinect.update();
-    
-    // Update normalized values
-    ofxUISlider *slider = (ofxUISlider *)kinectUI->getWidget("DISTANCE");
-    scaledDistance = slider->getNormalizedValue();
-    
-    ofxUI2DPad *pad = (ofxUI2DPad *)kinectUI->getWidget("POSITION");
-    scaledPosX = pad->getValue().x;
-    scaledPosY = pad->getValue().y;
-    
-    sendOsc("/kinect/distance", scaledDistance);
-    sendOsc("/kinect/x", scaledPosX);
-    sendOsc("/kinect/y", scaledPosY);
+//    
+//    // Update normalized values
+//    ofxUISlider *slider = (ofxUISlider *)kinectUI->getWidget("DISTANCE");
+//    scaledDistance = slider->getNormalizedValue();
+//    
+//    ofxUI2DPad *pad = (ofxUI2DPad *)kinectUI->getWidget("POSITION");
+//    scaledPosX = pad->getValue().x;
+//    scaledPosY = pad->getValue().y;
+//    
+//    sendOsc("/kinect/distance", scaledDistance);
+//    sendOsc("/kinect/x", scaledPosX);
+//    sendOsc("/kinect/y", scaledPosY);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-    cvKinect.draw(10, 10, CANVAS_WIDTH, CANVAS_HEIGHT);
+    cvKinect.draw(0, 0, 640, 480);
+    if (bSetupMode) {
+        gui.draw();
+    }
 }
 
 void ofApp::exit()
 {
-    //configUI1->saveSettings("config1.xml");
-    //configUI2->saveSettings("config2.xml");
-}
-
-void ofApp::guiEvent(ofxUIEventArgs &e)
-{
-    string name = e.getName();
-    if (name == "SAVE") {
-        ofxUILabelButton *button = (ofxUILabelButton *) e.widget;
-        configUI1->saveSettings("config1.xml");
-        configUI2->saveSettings("config2.xml");
-    }
-    else if (name == "LOAD") {
-        ofxUILabelButton *button = (ofxUILabelButton *) e.widget;
-        configUI1->loadSettings("config1.xml");
-        configUI2->loadSettings("config2.xml");
-    }
-    else if (name == "LOAD DEFAULTS") {
-        ofxUILabelButton *button = (ofxUILabelButton *) e.widget;
-        loadDefaultConfig();
-    }
+    
 }
 
 //--------------------------------------------------------------
@@ -156,13 +136,11 @@ void ofApp::keyPressed(int key)
             ofToggleFullscreen();
             break;
         case 's':
-            configUI1->saveSettings("config1.xml");
-            configUI2->saveSettings("config2.xml");
             break;
         case 'd':
             loadDefaultConfig();
             break;
-        case 'h':
+        case OF_KEY_TAB:
             bSetupMode = !bSetupMode;
             break;
         default:
@@ -177,30 +155,6 @@ void ofApp::sendOsc(string key, float val)
     m.setAddress(key);
     m.addFloatArg(val);
     oscSender.sendMessage(m);
-}
-
-//--------------------------------------------------------------
-void ofApp::loadDefaultConfig()
-{
-    cvKinect.pos = ofVec3f(0);
-    
-    cvKinect.roi.x = 0;
-    cvKinect.roi.y = 0;
-    cvKinect.roi.width = 640;
-    cvKinect.roi.height = 480;
-    
-    cvKinect.nearThreshValue = 0;
-    cvKinect.farThreshValue = 300;
-    
-    cvKinect.minBlobSize = 5000.f;
-    
-    cvKinect.nbDilate = 0;
-    cvKinect.nbErode = 0;
-    
-    oscHost = "127.0.0.1";
-    oscPort = 3333;
-    
-    oscSender.setup(oscHost, oscPort);
 }
 
 //--------------------------------------------------------------
