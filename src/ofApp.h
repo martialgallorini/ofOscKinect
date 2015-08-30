@@ -37,35 +37,6 @@ public:
     ofxPanel gui;
     ofParameterGroup parameters;
     
-    
-    
-//    // BLOB position
-//    ofParameter<float> posX;
-//    ofParameter<float> posY;
-//    ofParameter<float> dist;
-//    
-//    // BLOB detection
-//    
-//    ofParameter<float> blobMinSize;
-//    ofParameter<float> farThresh;
-//    ofParameter<float> nearThresh;
-//    ofParameter<bool> bDilate;
-//    ofParameter<float> nbDilate;
-//    ofParameter<bool> bErode;
-//    ofParameter<float> nbErode;
-
-
-
-    
-    
-    // ROI
-    ofParameter<float> roiX;
-    ofParameter<float> roiY;
-    ofParameter<float> roiW;
-    ofParameter<float> roiH;
-    
-    
-    
     bool bSetupMode;
     
     //---------- OSC ----------//

@@ -123,7 +123,7 @@ int kinectTracker::getNbBlobs() {
 }
 
 void kinectTracker::draw() {
-    //ofPushMatrix();
+    ofPushMatrix();
     depthImage.draw(0, 0);
     roi.draw(0, 0);
     
@@ -139,7 +139,7 @@ void kinectTracker::draw() {
         ofPopStyle();
     }
     
-    //ofPopMatrix();
+    ofPopMatrix();
 }
 
 void kinectTracker::draw(float _x, float _y, float _w, float _h) {
