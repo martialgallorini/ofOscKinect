@@ -45,6 +45,7 @@ public:
     ofParameter<bool> bErode;
     ofParameter<int> nbDilate;
     ofParameter<int> nbErode;
+    ofParameter<bool> bKinectSetup;
     
     // smoothed position of blob
     ofParameter<ofVec3f> pos;

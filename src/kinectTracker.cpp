@@ -18,7 +18,7 @@ kinectTracker::~kinectTracker() {
 }
 
 void kinectTracker::setup() {
-    kinect.init(true, true, true); // set first value to true to show IR image of false for RGB
+    kinect.init(true, true, true); // set first value to true to show IR image or false for RGB
     kinect.setDepthClipping(NEAR_CLIP, FAR_CLIP);
     kinect.open();
         
@@ -42,6 +42,7 @@ void kinectTracker::setup() {
     parameters.add(nbErode.set("nb erode pass", 1, 1, 50));
     
     parameters.add(pos.set("Blob position", ofVec3f(0,0,0), ofVec3f(0,0,0), ofVec3f(ofGetWidth(), ofGetHeight(), 200)));
+    parameters.add(bKinectSetup.set("Kinect IR Image", false));
 
     roi.x = 0;
     roi.y = 0;
@@ -128,7 +129,12 @@ int kinectTracker::getNbBlobs() {
 
 void kinectTracker::draw() {
     //ofPushMatrix();
-    depthImage.draw(0, 0);
+    if (bKinectSetup) {
+        kinect.draw(0, 0);
+    }
+    else {
+        depthImage.draw(0, 0);
+    }
     roi.draw(0, 0);
     
     if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {

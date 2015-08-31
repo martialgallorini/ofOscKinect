@@ -16,7 +16,9 @@ void ofApp::setup(){
     
     parameters.setName("SETTINGS");
     parameters.add(cvKinect.parameters);
-    gui.setup(parameters);    
+    gui.setup(parameters);
+    
+    gui.loadFromFile("settings.xml");
 }
 
 //--------------------------------------------------------------
@@ -28,7 +30,7 @@ void ofApp::update()
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-    cvKinect.draw(0, 0, 640, 480);
+    cvKinect.draw();
     if (bSetupMode) {
         gui.draw();
     }
