@@ -128,14 +128,14 @@ int kinectTracker::getNbBlobs() {
 }
 
 void kinectTracker::draw() {
-    //ofPushMatrix();
+    ofPushMatrix();
     if (bKinectSetup) {
         kinect.draw(0, 0);
     }
     else {
         depthImage.draw(0, 0);
     }
-    roi.draw(0, 0);
+    roi.draw();
     
     if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
         //ofPushMatrix();
@@ -150,15 +150,16 @@ void kinectTracker::draw() {
         //ofPopMatrix();
     }
     
-    //ofPopMatrix();
+    ofPopMatrix();
 }
 
 void kinectTracker::draw(float _x, float _y, float _w, float _h) {
-    ofPushMatrix();
+    //ofPushMatrix();
     ofTranslate(_x, _y);
     ofScale(_w/CAM_WIDTH, _h/CAM_HEIGHT);
     depthImage.draw(0, 0);
-    roi.draw(0, 0);
+    //roi.draw(0, 0);
+    roi.draw();
     
     if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
         ofTranslate(roi.x, roi.y);
@@ -171,7 +172,7 @@ void kinectTracker::draw(float _x, float _y, float _w, float _h) {
         ofPopStyle();
     }
     
-    ofPopMatrix();
+    //ofPopMatrix();
 }
 
 void kinectTracker::drawDepth() {

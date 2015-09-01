@@ -16,6 +16,7 @@ void ofApp::setup(){
     
     parameters.setName("SETTINGS");
     parameters.add(cvKinect.parameters);
+    parameters.add(cvKinect.roi.parameters);
     gui.setup(parameters);
     
     gui.loadFromFile("settings.xml");
