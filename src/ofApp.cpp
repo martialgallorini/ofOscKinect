@@ -36,8 +36,12 @@ void ofApp::draw()
         gui.draw();
     }
     if (cvKinect.getNbBlobs() > 0) {
+        sendOsc("/kinect/detected", 1);
         sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, 640, 0, 1));
         sendOsc("/kinect/y", ofMap(cvKinect.pos->y, 0, 480, 0, 1));
+    }
+    else {
+        sendOsc("/kinect/detected", 0);
     }
 }
 
