@@ -31,6 +31,9 @@ public:
     void drawDepth(float _x, float _y, float _w, float _h);
     int getNbBlobs();
     //void close();
+    
+    void tiltUp();
+    void tiltDown();
 
     ROI roi;
     
@@ -45,7 +48,7 @@ public:
     ofParameter<bool> bErode;
     ofParameter<int> nbDilate;
     ofParameter<int> nbErode;
-    ofParameter<bool> bKinectSetup;
+    ofParameter<bool> bKinectRgb;
     
     // smoothed position of blob
     ofParameter<ofVec3f> pos;

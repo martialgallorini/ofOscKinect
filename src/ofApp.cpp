@@ -18,6 +18,8 @@ void ofApp::setup(){
     parameters.add(cvKinect.parameters);
     parameters.add(cvKinect.roi.parameters);
     gui.setup(parameters);
+    gui.add(bVerticalFlip.set("Flip vertical values", false));
+    gui.add(bHorizontalFlip.set("Flip horizontal values", false));
     
     gui.loadFromFile("settings.xml");
 }
@@ -37,8 +39,20 @@ void ofApp::draw()
     }
     if (cvKinect.getNbBlobs() > 0) {
         sendOsc("/kinect/detected", 1);
-        sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, 640, 0, 1));
-        sendOsc("/kinect/y", ofMap(cvKinect.pos->y, 0, 480, 0, 1));
+        if (bHorizontalFlip) {
+            sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, cvKinect.roi.width, 1, 0));
+        }
+        else{
+            sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, cvKinect.roi.width, 0, 1));
+        }
+        
+        if (bVerticalFlip) {
+            sendOsc("/kinect/y", ofMap(cvKinect.pos->y, 0, cvKinect.roi.height, 1, 0));
+        }
+        else
+        {
+            sendOsc("/kinect/y", ofMap(cvKinect.pos->y, 0, cvKinect.roi.height, 0, 1));
+        }
     }
     else {
         sendOsc("/kinect/detected", 0);
@@ -63,6 +77,12 @@ void ofApp::keyPressed(int key)
             break;
         case OF_KEY_TAB:
             bSetupMode = !bSetupMode;
+            break;
+        case OF_KEY_UP:
+            cvKinect.tiltUp();
+            break;
+        case OF_KEY_DOWN:
+            cvKinect.tiltDown();
             break;
         default:
             break;

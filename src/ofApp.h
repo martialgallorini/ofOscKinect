@@ -41,4 +41,7 @@ public:
     ofxOscSender oscSender;
     void sendOsc(string key, float val);
     
+    ofParameter<bool> bVerticalFlip;
+    ofParameter<bool> bHorizontalFlip;
+    
 };

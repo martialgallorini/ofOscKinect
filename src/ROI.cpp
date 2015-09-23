@@ -84,7 +84,6 @@ void ROI::changeRoiY(float &posY) {
 
 void ROI::changeRoiWidth(float &width) {
     this->setWidth(width);
-
 }
 
 void ROI::changeRoiHeight(float &height) {

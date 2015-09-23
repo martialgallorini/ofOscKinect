@@ -6,7 +6,6 @@
 //
 //
 
-
 #include "kinectTracker.h"
 
 kinectTracker::kinectTracker() {
@@ -18,8 +17,8 @@ kinectTracker::~kinectTracker() {
 }
 
 void kinectTracker::setup() {
-    kinect.init(true, true, true); // set first value to true to show IR image or false for RGB
-    kinect.setDepthClipping(NEAR_CLIP, FAR_CLIP);
+    kinect.init(false, true, true); // set first value to true to show IR image or false for RGB
+    //kinect.setDepthClipping(NEAR_CLIP, FAR_CLIP);
     kinect.open();
         
     kinect.setLed(ofxKinect::LED_OFF);
@@ -42,7 +41,7 @@ void kinectTracker::setup() {
     parameters.add(nbErode.set("nb erode pass", 1, 1, 50));
     
     parameters.add(pos.set("Blob position", ofVec3f(0,0,0), ofVec3f(0,0,0), ofVec3f(ofGetWidth(), ofGetHeight(), 200)));
-    parameters.add(bKinectSetup.set("Kinect IR Image", false));
+    parameters.add(bKinectRgb.set("Kinect RGB Image", false));
 
     roi.x = 0;
     roi.y = 0;
@@ -94,7 +93,7 @@ void kinectTracker::update() {
         depthImage.flagImageChanged();
         
         //find blob in ROI
-        contourFinder.findContours(depthImage, minBlobSize, roi.width*roi.height, 2, false);
+        contourFinder.findContours(depthImage, minBlobSize, 640*480, 2, false);
         
         depthImage.resetROI();
         nearThresholdImage.resetROI();
@@ -120,7 +119,6 @@ void kinectTracker::update() {
     {
         pos = ofVec3f(0);
     }
-
 }
 
 int kinectTracker::getNbBlobs() {
@@ -128,17 +126,18 @@ int kinectTracker::getNbBlobs() {
 }
 
 void kinectTracker::draw() {
-    ofPushMatrix();
-    if (bKinectSetup) {
+    //ofPushMatrix();
+    if (bKinectRgb) {
         kinect.draw(0, 0);
     }
     else {
         depthImage.draw(0, 0);
     }
+    
     roi.draw();
     
     if(contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize) {
-        //ofPushMatrix();
+        ofPushMatrix();
         ofTranslate(roi.x, roi.y);
         contourFinder.draw(0,0);
         
@@ -147,14 +146,14 @@ void kinectTracker::draw() {
         ofSetColor(0, 255, 0);
         ofCircle(pos.get().x, pos.get().y, 3);
         ofPopStyle();
-        //ofPopMatrix();
+        ofPopMatrix();
     }
     
-    ofPopMatrix();
+    //ofPopMatrix();
 }
 
 void kinectTracker::draw(float _x, float _y, float _w, float _h) {
-    //ofPushMatrix();
+    ofPushMatrix();
     ofTranslate(_x, _y);
     ofScale(_w/CAM_WIDTH, _h/CAM_HEIGHT);
     depthImage.draw(0, 0);
@@ -172,7 +171,7 @@ void kinectTracker::draw(float _x, float _y, float _w, float _h) {
         ofPopStyle();
     }
     
-    //ofPopMatrix();
+    ofPopMatrix();
 }
 
 void kinectTracker::drawDepth() {
@@ -196,3 +195,12 @@ void kinectTracker::drawDepth(float _x, float _y, float _w, float _h) {
     }
     ofPopMatrix();
 }
+
+void kinectTracker::tiltUp() {
+    kinect.setCameraTiltAngle(kinect.getCurrentCameraTiltAngle() + 1);
+}
+
+void kinectTracker::tiltDown() {
+    kinect.setCameraTiltAngle(kinect.getCurrentCameraTiltAngle() - 1);
+}
+
