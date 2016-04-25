@@ -42,7 +42,8 @@ void ofApp::draw()
         if (bHorizontalFlip) {
             sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, cvKinect.roi.width, 1, 0));
         }
-        else{
+        else
+        {
             sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, cvKinect.roi.width, 0, 1));
         }
         
@@ -54,7 +55,8 @@ void ofApp::draw()
             sendOsc("/kinect/y", ofMap(cvKinect.pos->y, 0, cvKinect.roi.height, 0, 1));
         }
     }
-    else {
+    else
+    {
         sendOsc("/kinect/detected", 0);
     }
 }
