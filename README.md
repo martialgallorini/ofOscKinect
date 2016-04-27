@@ -30,7 +30,7 @@ License
 
 ofOscKinect - Graphical user interface for Kinect and CV detection with OSC features
 
-Martial GALLORINI (http://www.martialgallorini.com/)
+Martial GALLORINI (http://martialgallorini.github.io/)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
