@@ -43,5 +43,5 @@ public:
     
     ofParameter<bool> bVerticalFlip;
     ofParameter<bool> bHorizontalFlip;
-    
+
 };

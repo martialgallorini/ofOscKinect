@@ -17,6 +17,8 @@ kinectTracker::~kinectTracker() {
 }
 
 void kinectTracker::setup() {
+    
+#ifdef KINECT
     kinect.init(false, true, true); // set first value to true to show IR image or false for RGB
     //kinect.setDepthClipping(NEAR_CLIP, FAR_CLIP);
     kinect.open();
@@ -26,6 +28,15 @@ void kinectTracker::setup() {
     depthImage.allocate(kinect.width, kinect.height);
     nearThresholdImage.allocate(kinect.width, kinect.height);
     farThresholdImage.allocate(kinect.width, kinect.height);
+#else
+    video.load("test_nb.mov");
+    video.play();
+    
+    depthImage.allocate(video.getWidth(), video.getHeight());
+    nearThresholdImage.allocate(video.getWidth(), video.getHeight());
+    farThresholdImage.allocate(video.getWidth(), video.getHeight());
+
+#endif
     
     // SETUP PARAMETERS
     
@@ -45,19 +56,76 @@ void kinectTracker::setup() {
 
     roi.x = 0;
     roi.y = 0;
+    
+#ifdef KINECT
     roi.width = kinect.width;
     roi.height = kinect.height;
+#else
+    roi.width = video.getWidth();
+    roi.height = video.getHeight();
+#endif
 }
 
 void kinectTracker::update() {
-    
+
+#ifdef KINECT
     kinect.update();
     
     if(kinect.isFrameNew())
     {
         // load grayscale depth image from the kinect source
-        depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+        depthImage.setFromPixels(kinect.getDepthPixels());
         
+//        // problem : unconsistent distance detection when flipping image
+//        //depthImage.mirror(false, true);
+//        
+//        // Region of Interest
+//        ofRectangle roiMat = ofRectangle(roi.x, roi.y, roi.width, roi.height);
+//        depthImage.setROI(roiMat);
+//        nearThresholdImage.setROI(roiMat);
+//        farThresholdImage.setROI(roiMat);
+//        
+//        // Threshold
+//        nearThresholdImage = depthImage;
+//        farThresholdImage = depthImage;
+//        nearThresholdImage.threshold(nearThreshValue, true);
+//        farThresholdImage.threshold(farThreshValue);
+//
+//        // Combine thresholded images
+//        cvAnd(nearThresholdImage.getCvImage(), farThresholdImage.getCvImage(), depthImage.getCvImage(), NULL);
+//        
+//        // Optimize blob filters
+//        if (bDilate){
+//            for(int i = 0; i < nbDilate; i++){
+//                depthImage.dilate();
+//            }
+//        }
+//        
+//        if (bErode) {
+//            for(int i = 0; i < nbErode; i++){
+//                depthImage.erode();
+//            }
+        }
+        
+        // update the cv images
+        depthImage.flagImageChanged();
+        
+        //find blob in ROI
+        contourFinder.findContours(depthImage, minBlobSize, 640*480, 2, false);
+        
+        depthImage.resetROI();
+        nearThresholdImage.resetROI();
+        farThresholdImage.resetROI();
+
+    }
+#else
+    video.update();
+    
+    if(video.isFrameNew())
+    {
+        // load grayscale depth image from the kinect source
+        colorImage.setFromPixels(video.getPixels());
+        depthImage = colorImage;
         // problem : unconsistent distance detection when flipping image
         //depthImage.mirror(false, true);
         
@@ -72,7 +140,7 @@ void kinectTracker::update() {
         farThresholdImage = depthImage;
         nearThresholdImage.threshold(nearThreshValue, true);
         farThresholdImage.threshold(farThreshValue);
-
+        
         // Combine thresholded images
         cvAnd(nearThresholdImage.getCvImage(), farThresholdImage.getCvImage(), depthImage.getCvImage(), NULL);
         
@@ -98,11 +166,19 @@ void kinectTracker::update() {
         depthImage.resetROI();
         nearThresholdImage.resetROI();
         farThresholdImage.resetROI();
-
+        
     }
+#endif
+
     
     if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
     {
+        float maxBlobHeight = 150;
+        if (contourFinder.blobs.at(0).boundingRect.getHeight() > maxBlobHeight) {
+            contourFinder.blobs.at(0).boundingRect.setHeight(maxBlobHeight);
+            contourFinder.blobs.at(0).centroid.y = contourFinder.blobs[0].boundingRect.getTop() + maxBlobHeight / 2;
+        }
+        
         // get new centroid
         ofVec3f newPos = contourFinder.blobs.at(0).centroid;
         
@@ -112,7 +188,11 @@ void kinectTracker::update() {
         // blobs will be shifted by the ROI offset, so if the ROI starts at x = 100, then a blob that normally is at position x = 150
         // is now at position x = 50, so we need to add roi.x to blob x position to see it in its right place again.
         ofVec3f v = pos.get();
+        
+#ifdef KINECT
         v.z = kinect.getDistanceAt(pos.get().x + roi.x, pos.get().y + roi.y);
+#endif
+
         pos.set(v);
     }
     else
@@ -144,7 +224,7 @@ void kinectTracker::draw() {
         // Draw blob centroid
         ofPushStyle();
         ofSetColor(0, 255, 0);
-        ofCircle(pos.get().x, pos.get().y, 3);
+        ofDrawCircle(pos.get().x, pos.get().y, 3);
         ofPopStyle();
         ofPopMatrix();
     }
@@ -167,7 +247,7 @@ void kinectTracker::draw(float _x, float _y, float _w, float _h) {
         // Draw blob centroid
         ofPushStyle();
         ofSetColor(0, 255, 0);
-        ofCircle(pos.get().x, pos.get().y, 3);
+        ofDrawCircle(pos.get().x, pos.get().y, 3);
         ofPopStyle();
     }
     

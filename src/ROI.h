@@ -19,11 +19,11 @@ class ROI : public ofBaseDraws, public ofRectangle {
 public:
     ROI();
     ~ROI();
-    void draw();
-    void draw(float _x,float _y);
-    void draw(float _x,float _y,float w, float h);
-    float getWidth();
-    float getHeight();
+    void draw() const;
+    void draw(float _x,float _y) const;
+    void draw(float _x,float _y,float w, float h) const;
+    float getWidth() const;
+    float getHeight()const;
     
     ofParameterGroup parameters;
     ofParameter<float> posX;

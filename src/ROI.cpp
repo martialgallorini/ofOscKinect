@@ -31,15 +31,15 @@ ROI::~ROI() {
 }
 
 
-float ROI::getWidth()  {
+float ROI::getWidth() const {
     return CAM_WIDTH;
 }
 
-float ROI::getHeight()  {
+float ROI::getHeight() const {
     return CAM_HEIGHT;
 }
 
-void ROI::draw() {
+void ROI::draw() const {
     
     ofPushMatrix();
     
@@ -47,17 +47,17 @@ void ROI::draw() {
     ofSetColor(255, 0, 0);
     ofNoFill();
     ofSetLineWidth(2);
-    ofRect(*this);
+    ofDrawRectangle(*this);
     ofPopStyle();
     
     ofPopMatrix();
 }
 
-void ROI::draw(float _x,float _y) {
+void ROI::draw(float _x,float _y) const {
     draw(_x, _y, CAM_WIDTH, CAM_HEIGHT);
 }
 
-void ROI::draw(float _x,float _y,float w, float h)  {
+void ROI::draw(float _x,float _y,float w, float h) const {
     
     ofPushMatrix();
     
@@ -68,7 +68,7 @@ void ROI::draw(float _x,float _y,float w, float h)  {
     ofSetColor(255, 0, 0);
     ofNoFill();
     ofSetLineWidth(2);
-    ofRect(*this);
+    ofDrawRectangle(*this);
     ofPopStyle();
     
     ofPopMatrix();

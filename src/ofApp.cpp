@@ -10,7 +10,7 @@ void ofApp::setup(){
     
     cvKinect.setup();
     
-    oscSender.setup("127.0.0.1", 3333);
+    oscSender.setup("127.0.0.1", 9001);
     
     bSetupMode = false;
     
