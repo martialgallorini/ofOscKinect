@@ -12,8 +12,6 @@
 #define NEAR_CLIP 500
 #define FAR_CLIP 1200
 
-#define KINECT
-
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 #include "ROI.h"
@@ -54,8 +52,6 @@ public:
     
     // smoothed position of blob
     ofParameter<ofVec3f> pos;
-    
-    ofVideoPlayer video;
     
 private:
     
