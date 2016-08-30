@@ -54,6 +54,7 @@ void ofApp::draw()
         {
             sendOsc("/kinect/y", ofMap(cvKinect.pos->y, 0, cvKinect.roi.height, 0, 1));
         }
+        sendOsc("/kinect/z", ofMap(cvKinect.pos->z, 0, 50, 0, 1));
     }
     else
     {

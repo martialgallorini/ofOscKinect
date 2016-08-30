@@ -12,7 +12,7 @@
 #define NEAR_CLIP 500
 #define FAR_CLIP 1200
 
-//#define KINECT
+#define KINECT
 
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"

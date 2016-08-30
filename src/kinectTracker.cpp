@@ -117,7 +117,7 @@ void kinectTracker::update() {
         nearThresholdImage.resetROI();
         farThresholdImage.resetROI();
 
-    }
+    
 #else
     video.update();
     
@@ -197,7 +197,7 @@ void kinectTracker::update() {
     }
     else
     {
-        pos = ofVec3f(0);
+        pos = ofVec3f(ofGetWidth() / 2, ofGetHeight() / 2, 0);
     }
 }
 
