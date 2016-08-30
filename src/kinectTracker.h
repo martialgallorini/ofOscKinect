@@ -12,6 +12,8 @@
 #define NEAR_CLIP 500
 #define FAR_CLIP 1200
 
+#define KINECT
+
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 #include "ROI.h"
@@ -27,23 +29,33 @@ public:
     void update();
     void draw();
     void draw(float _x, float _y, float _w, float _h);
+    void drawDepth();
     void drawDepth(float _x, float _y, float _w, float _h);
     int getNbBlobs();
     //void close();
+    
+    void tiltUp();
+    void tiltDown();
 
     ROI roi;
     
     //---------- Parameters ----------//
     
-    float nearThreshValue;
-    float farThreshValue;
-    float minBlobSize;
-    bool bDilate;
-    bool bErode;
-    int nbDilate;
-    int nbErode;
+    ofParameterGroup parameters;
+        
+    ofParameter<float> nearThreshValue;
+    ofParameter<float> farThreshValue;
+    ofParameter<float> minBlobSize;
+    ofParameter<bool> bDilate;
+    ofParameter<bool> bErode;
+    ofParameter<int> nbDilate;
+    ofParameter<int> nbErode;
+    ofParameter<bool> bKinectRgb;
     
-    ofVec3f pos; // x, y and z position of blob
+    // smoothed position of blob
+    ofParameter<ofVec3f> pos;
+    
+    ofVideoPlayer video;
     
 private:
     
@@ -53,6 +65,7 @@ private:
     
     //---------- blob tracking with ofxKinect and ofxOpenCV ----------//
     
+    ofxCvColorImage colorImage;
     ofxCvGrayscaleImage depthImage; // grayscale depth image
     ofxCvGrayscaleImage nearThresholdImage;
     ofxCvGrayscaleImage farThresholdImage;

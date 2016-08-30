@@ -6,6 +6,8 @@
 //
 //
 
+#include <ofMain.h>
+
 #ifndef ofOscKinect_ROI_h
 #define ofOscKinect_ROI_h
 
@@ -15,34 +17,24 @@
 class ROI : public ofBaseDraws, public ofRectangle {
     
 public:
-    void draw(float _x,float _y) {
-        draw(_x, _y, getWidth(), getHeight());
-    }
+    ROI();
+    ~ROI();
+    void draw() const;
+    void draw(float _x,float _y) const;
+    void draw(float _x,float _y,float w, float h) const;
+    float getWidth() const;
+    float getHeight()const;
     
-    void draw(float _x,float _y,float w, float h)  {
+    ofParameterGroup parameters;
+    ofParameter<float> posX;
+    ofParameter<float> posY;
+    ofParameter<float> width;
+    ofParameter<float> height;
         
-        ofPushMatrix();
-        
-        ofTranslate(_x, _y);
-        ofScale(w/CAM_WIDTH, h/CAM_HEIGHT);
-        
-        ofPushStyle();
-        ofSetColor(255, 0, 0);
-        ofNoFill();
-        ofSetLineWidth(1);
-        ofRect(*this);
-        ofPopStyle();
-        
-        ofPopMatrix();
-    }
-    
-    float getWidth()  {
-        return CAM_WIDTH;
-    }
-    
-    float getHeight()  {
-        return CAM_HEIGHT;
-    }
+    void changeRoiX(float &posX);
+    void changeRoiY(float &posY);
+    void changeRoiWidth(float &width);
+    void changeRoiHeight(float &height);
 };
 
 #endif
