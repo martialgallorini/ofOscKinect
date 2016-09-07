@@ -22,23 +22,26 @@ void ofApp::setup(){
     gui.add(bHorizontalFlip.set("Flip horizontal values", false));
     
     gui.loadFromFile("settings.xml");
+    
+    cvKinect.bBlobs.addListener(this, &ofApp::onBlobsDetected);
+}
+
+//--------------------------------------------------------------
+void ofApp::onBlobsDetected(bool &val) {
+    if (val) {
+        sendOsc("/kinect/detected", 1);
+    }
+    else {
+        sendOsc("/kinect/detected", 0);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::update()
 {
     cvKinect.update();
-}
-
-//--------------------------------------------------------------
-void ofApp::draw()
-{
-    cvKinect.draw();
-    if (bSetupMode) {
-        gui.draw();
-    }
-    if (cvKinect.getNbBlobs() > 0) {
-        sendOsc("/kinect/detected", 1);
+    
+    if (cvKinect.bBlobs) {
         if (bHorizontalFlip) {
             sendOsc("/kinect/x", ofMap(cvKinect.pos->x, 0, cvKinect.roi.width, 1, 0));
         }
@@ -56,15 +59,20 @@ void ofApp::draw()
         }
         sendOsc("/kinect/z", ofMap(cvKinect.pos->z, cvKinect.pos.getMin().z, cvKinect.pos.getMax().z, 0, 1));
     }
-    else
-    {
-        sendOsc("/kinect/detected", 0);
+}
+
+//--------------------------------------------------------------
+void ofApp::draw()
+{
+    cvKinect.draw();
+    if (bSetupMode) {
+        gui.draw();
     }
 }
 
 void ofApp::exit()
 {
-    
+    cvKinect.bBlobs.removeListener(this, &ofApp::onBlobsDetected);
 }
 
 //--------------------------------------------------------------

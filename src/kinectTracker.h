@@ -53,6 +53,8 @@ public:
     // smoothed position of blob
     ofParameter<ofVec3f> pos;
     
+    ofParameter<bool> bBlobs;
+    
 private:
     
     ofxKinect kinect;

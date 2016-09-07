@@ -32,6 +32,7 @@ void kinectTracker::setup() {
     
     parameters.setName("Kinect Parameters");
     
+    parameters.add(bBlobs.set("blobs detected", false));
     parameters.add(nearThreshValue.set("near threshold", 258, 0, 400));
     parameters.add(farThreshValue.set("far threshold", 165, 0, 400));
     parameters.add(minBlobSize.set("min blob size", 5000, 0, 20000));
@@ -43,7 +44,7 @@ void kinectTracker::setup() {
     
     parameters.add(pos.set("Blob position", ofVec3f(0,0,0), ofVec3f(0,0,400), ofVec3f(ofGetWidth(), ofGetHeight(), 900)));
     parameters.add(bKinectRgb.set("Kinect RGB Image", false));
-    
+        
     roi.x = 0;
     roi.y = 0;
     
@@ -103,6 +104,9 @@ void kinectTracker::update() {
         
         if (contourFinder.nBlobs > 0 && contourFinder.blobs[0].area > minBlobSize)
         {
+            if(!bBlobs){
+                bBlobs = true;
+            }
             float maxBlobHeight = 150;
             if (contourFinder.blobs.at(0).boundingRect.getHeight() > maxBlobHeight) {
                 contourFinder.blobs.at(0).boundingRect.setHeight(maxBlobHeight);
@@ -125,6 +129,9 @@ void kinectTracker::update() {
         }
         else
         {
+            if(bBlobs){
+                bBlobs = false;
+            }
             pos = ofVec3f(ofGetWidth() / 2, ofGetHeight() / 2, 0);
         }
     }

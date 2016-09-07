@@ -27,6 +27,8 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    void onBlobsDetected(bool &val);
+    
     kinectTracker cvKinect;
         
     //---------- GUI ----------//
