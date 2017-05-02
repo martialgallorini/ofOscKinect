@@ -24,6 +24,8 @@ void ofApp::setup(){
     gui.loadFromFile("settings.xml");
     
     cvKinect.bBlobs.addListener(this, &ofApp::onBlobsDetected);
+    
+    bHelp = false;
 }
 
 //--------------------------------------------------------------
@@ -68,6 +70,20 @@ void ofApp::draw()
     if (bSetupMode) {
         gui.draw();
     }
+    
+    if (bHelp) {
+        ofDrawBitmapString("setup : TAB", 300, 20);
+        ofDrawBitmapString("fulscreen : 'f'", 300, 30);
+        ofDrawBitmapString("Kinect tilt up : key up", 300, 40);
+        ofDrawBitmapString("Kinect tilt down : key down", 300, 50);
+        ofDrawBitmapString("OSC sender address : localhost", 300, 60);
+        ofDrawBitmapString("OSC out port : 9001", 300, 70);
+        ofDrawBitmapString("Kinect x position : /kinect/x", 300, 80);
+        ofDrawBitmapString("Kinect y position : /kinect/y", 300, 90);
+        ofDrawBitmapString("Kinect z position : /kinect/z", 300, 100);
+        ofDrawBitmapString("Kinect blob detected : /kinect/detected", 300, 110);
+        
+    }
 }
 
 void ofApp::exit()
@@ -82,9 +98,8 @@ void ofApp::keyPressed(int key)
         case 'f':
             ofToggleFullscreen();
             break;
-        case 's':
-            break;
-        case 'd':
+        case 'h':
+            bHelp = !bHelp;
             break;
         case OF_KEY_TAB:
             bSetupMode = !bSetupMode;

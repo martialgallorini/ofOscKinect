@@ -29,6 +29,8 @@ public:
     
     void onBlobsDetected(bool &val);
     
+    bool bHelp;
+    
     kinectTracker cvKinect;
         
     //---------- GUI ----------//
